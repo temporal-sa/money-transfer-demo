@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "money-transfer-web"
+version = "0.1.0"
+description = ""
+authors = ["Mike Nichols <mike.nichols@temporal.io>"]
+readme = "README.md"
+packages = [
+    { include = "**/*.py", from = "."  }
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+temporalio = "^1.6.0"
+poetry = "^1.8.3"
+flask = "^3.0.3"
+
+[tool.poetry.dev-dependencies]
+black = "^24.4.2"
+isort = "^5.13.2"
+mypy = "^1.10.0"
+pytest = "^8.2.1"
+pytest-asyncio = "^0.18.3"
+frozenlist = "^1.4.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
