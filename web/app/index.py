@@ -1,26 +1,68 @@
-from flask import Flask, render_template, g
+import sys
+import os
+import asyncio
+from dotenv import load_dotenv
 
-app = Flask(__name__, template_folder='../templates', static_folder='../static')
+# from clients import get_clients
+from quart import Quart, render_template, g, jsonify
+from temporalio.service import RPCError
 
-app_info = {
-    'name': 'Temporal Money Transfer',
-    'temporal': {
-        'namespace': 'foo'
-    }
-}
+from app.clients import get_clients
+from app.config import get_config
+from app.views import get_transfer_money_form
+
+load_dotenv()
+app = Quart(__name__, template_folder='../templates', static_folder='../static')
+cfg = get_config()
+
+app_info = dict({
+    'name': 'Temporal Money Transfer'
+})
+app_info = {**app_info, **cfg}
+
+
+@app.before_serving
+async def startup():
+    clients = await get_clients()
+    app.clients = clients
+    print('clients are available at `app.clients`')
+
+
+@app.after_serving
+async def shutdown():
+    app.clients.close()
+
+
 @app.before_request
 def apply_app_info():
     g.app_info = app_info
+
 
 @app.context_processor
 def view_app_info():
     return dict(app_info=g.app_info)
 
+
+@app.route('/debug')
+async def debug():
+    health = False
+    if app.clients.temporal and app.clients.temporal.service_client is not None:
+        try:
+            health = await app.temporal.service_client.check_health()
+        except RPCError as e:
+            health = e.message
+    return jsonify({
+        'app_info': app_info,
+        'temporal_client_health': health,
+    })
+
+
 @app.route('/layout')
-def layout():
-    return render_template(template_name_or_list='layout.html')
+async def layout():
+    return await render_template(template_name_or_list='layout.html')
+
 
 @app.route('/')
-def index():
-    return render_template('index.html')
-    # return 'Hello Flask, Let\'s do web dev like it\'s 1999!'
+async def index():
+    form = await get_transfer_money_form()
+    return await render_template(template_name_or_list='index.html', form=form)

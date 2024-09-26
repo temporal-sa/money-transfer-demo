@@ -1,23 +1,110 @@
 {% extends "base.html" %}
 
 {% block header %}
-<h1>Temporal Money Transfer</h1>
+    {% include 'header.html' %}
 {% endblock header %}
 
 {% block main %}
-<p>
-    Bacon ipsum dolor amet tri-tip strip steak tongue buffalo. Porchetta hamburger short loin flank ham hock pig strip steak biltong, turkey kevin chicken picanha beef pork chop fatback. Salami prosciutto andouille doner, t-bone bacon pork belly tongue pancetta landjaeger. Short ribs bresaola porchetta landjaeger cow kevin rump tenderloin meatloaf ball tip burgdoggen. Cow picanha short loin, pork loin bacon pig cupim tongue ham brisket venison bresaola short ribs.
+<main class='h-full w-full flex flex-col items-center'>
 
-    Boudin porchetta cow beef ribeye hamburger shoulder alcatra short ribs spare ribs. Ball tip tail beef burgdoggen tri-tip. Ground round cupim swine meatloaf chuck short ribs burgdoggen. Meatball tri-tip bacon ground round. Tri-tip strip steak jowl, corned beef chicken t-bone ham pork sirloin kevin rump. Venison turkey shank beef capicola t-bone pastrami ham cupim cow sirloin pig doner kielbasa strip steak.
+    <form action='/transfers' method='post' class="flex flex-col items-stretch sm:w-1/2 h-full w-full max-w-380 border border-gray-200 p-4 rounded-md">
+        <input type='hidden' name='_METHOD' value='PUT'/>
+        <header class='text-2xl flex-auto w-full flex items-center'>
+            <h3 class='text-center w-full'>Transfer money</h3>
+        </header>
+        <div class='flex-auto form-control w-full'>
+            <label for="from-account" class="label"><span class='label-text'>From Account</span></label>
+            <select
+                    id="from-account"
+                    name='from_account'
+                    class="select select-bordered"
+                    required
+            >
+                <option disabled selected value>Select Account Type</option>
+                {% for acct in form.account_types %}
+                    <option value='{{acct.id}}'>{{acct.label}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class='flex-auto form-control'>
+            <label
+                    for="to-account"
+                    class="label"
+            ><span class='label-text'>To Account</span></label>
+            <select
+                    id="to-account"
+                    name='to_account'
+                    class="select select-bordered"
+                    required
+            >
+                <option disabled selected value>Select Recipient</option>
+                {% for rec in form.eligible_recipients %}
+                <option value='{{rec.id}}'>{{rec.label}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class='flex-auto form-control'>
+            <label for="amount" class="label w-full max-w-xs">
+                <span class='label-text'>Amount</span>
+            </label>
+            <div class='input input-bordered flex items-center gap-2'>
+                <span>$</span>
+                <input
+                        id="amount"
+                        type="number"
+                        name='amount'
+                        class="w-full max-x-xs"
+                        required/>
+            </div>
 
-    Chislic pastrami alcatra, pork t-bone andouille burgdoggen sausage turkey filet mignon picanha. Andouille ribeye tongue shank pork chop beef. Frankfurter jerky tail, tenderloin short loin t-bone pork belly prosciutto fatback tri-tip. Drumstick pork belly kevin boudin.
+        </div>
+        <div class="flex-auto form-control">
+            <label class='label' for="simulate"><span class='label-text'>Debug: Simulate</span> </label>
+            <select
+                    id="simulate"
+                    name='simulate_scenario'
+                    class="select select-bordered"
+            >
+                <option disabled selected value>Select Scenario</option>
+                {% for sc in form.scenarios %}
+                <option value='{{sc.id}}'>{{sc.label}}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-    Fatback short ribs sausage shoulder prosciutto jerky pastrami pork loin drumstick pancetta. Tenderloin prosciutto shankle, bacon chislic t-bone burgdoggen pastrami cow pork chop spare ribs. Capicola turkey short loin, corned beef filet mignon frankfurter tail t-bone salami. Frankfurter bresaola biltong venison pig shankle hamburger turkey turducken chislic short loin swine tri-tip. Cow bacon shankle frankfurter sirloin, pancetta bresaola ribeye turducken pork chop ball tip buffalo shank turkey.
+        <div class="flex-auto form-control">
+            <h4 class='italic'>Schedule a recurring transfer</h4>
+            <div class='flex align-middle items-center'>
+                <label for="schedule-interval" class="label w-16 max-w-xs">
+                    <span class='label-text'>Every</span>
+                </label>
+                <input
+                        class='input input-bordered w-12'
+                        id="schedule-interval"
+                        type="number"
+                        name='schedule_interval'
+                        value='0'/>
+                <span class='p-4'>seconds</span>
+            </div>
+            <div class='flex align-middle items-center'>
+                <label for="schedule-count" class="label w-16 max-w-xs">
+                    <span class='label-text'>Up to</span>
+                </label>
+                <input
+                        id="schedule-count"
+                        type="number"
+                        name='schedule_count'
+                        class="input input-bordered w-12"
+                        value='0'/>
+                <span class='p-4'>times</span>
 
-    Prosciutto sausage burgdoggen short ribs, tri-tip ground round cow tail sirloin. Biltong kevin meatloaf leberkas buffalo spare ribs doner ground round. Bresaola shankle cow pork. Kielbasa tail cupim rump shankle. Sausage spare ribs flank cupim leberkas bacon.
+            </div>
+        </div>
 
-    Burgdoggen turkey pig chuck. Boudin alcatra capicola, tri-tip sirloin swine beef andouille salami sausage shankle rump porchetta. Drumstick ball tip salami capicola prosciutto meatball hamburger. Filet mignon prosciutto pork venison picanha. Landjaeger alcatra turducken jowl, prosciutto short loin kevin porchetta swine t-bone tenderloin biltong. Tri-tip spare ribs short loin, drumstick t-bone ribeye jerky.
-</p>
+        <button type='submit' class='btn btn-primary'>Transfer</button>
+    </form>
+</main>
+
 {% endblock main %}
 
 {% block leftcol %}
