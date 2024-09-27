@@ -12,6 +12,9 @@
                 let data = JSON.parse(e.data)
                 console.log('data', data)
                 document.querySelector('#progress').setAttribute('value', data.progressPercentage)
+                let radial = document.querySelector('#radial-progress')
+                radial.setAttribute('style','--value:' + data.progressPercentage+';')
+                radial.innerHTML = `${data.progressPercentage}%`
                 console.log('SSE Data', e.data)
             });
         }
@@ -26,10 +29,11 @@
 <div class="flex flex-col sm:w-1/2 h-full w-full max-w-380 border border-gray-200 p-4 rounded-md">
     <header class='text-2xl flex-auto w-full flex items-center max-h-4'>
         <h3 class='text-center w-full'>
-            <a href='{{url_for_workflow(id)}}' class='link link-primary'>Transfer {{id}}</a>
+            <a href='{{url_for_workflow(id)}}' class='link link-primary' target='_blank'>Transfer {{id}}</a>
         </h3>
     </header>
     <div class='flex-auto'>
+        <div id='radial-progress' class="radial-progress" style="--value:0;" role="progressbar">0%</div>
         <progress id='progress' class="progress progress-primary w-56" value="0" max="100"></progress>
     </div>
 </div>

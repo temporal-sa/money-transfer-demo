@@ -89,7 +89,7 @@ async def debug():
 
 @app.route('/layout')
 async def layout():
-    return await render_template(template_name_or_list='layout.html')
+    return await render_template(template_name_or_list='debug.html')
 
 
 @app.route('/transfers', methods=['GET'])
@@ -139,12 +139,6 @@ async def sub(workflow_id):
             event = ServerSentEvent(data=json.dumps(state), retry=None, id=None,event=None)
             yield event.encode()
             await sleep(2)
-    # async def send_events():
-    #     while True:
-    #         data = ...  # Up to you where the events are from
-    #         event = ServerSentEvent(data)
-    #         yield event.encode()
-
     response = await make_response(
         async_generator(),
         {
