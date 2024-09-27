@@ -6,7 +6,7 @@ from flask import Flask, render_template, g
 
 load_dotenv()
 
-def get_config():
+def get_config() -> dict:
     return {
         'name': 'Temporal Money Transfer',
         'temporal': {

@@ -1,9 +1,11 @@
 <div class='corner'>
-  <a href='https://cloud.temporal.io/namespaces/{{app_info.temporal.connection.namespace}}' target='_blank'>
+  <a href='{{url_for_namespace()}}' target='_blank'>
     <img src='{{ url_for("static", filename="src/images/temporal-cloud.png") }}' alt='Temporal Cloud'/>
   </a>
 </div>
-<h1>{{app_info.name}}</h1>
+<header class='text-2xl'>
+  <h1>{{app_info.name}}</h1>
+</header>
 <div class='corner'>
   <a href='http://localhost:8233' target='_blank'>
     <img src='{{ url_for("static", filename="src/images/temporal-logo.png") }}' alt='Temporal Local'/>

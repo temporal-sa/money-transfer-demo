@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block header %}
+    {% include '_header.html' %}
+    <script type='application/javascript'>
+        const listen = () => {
+
+            const eventSource = new FetchEventSource(`/sub/{{id}}`);
+            eventSource.addEventListener('open', () => console.log('SSE Open'));
+            eventSource.addEventListener('error', (err) => console.log('SSE Error', err));
+            eventSource.addEventListener('message', (e) => {
+                let data = JSON.parse(e.data)
+                console.log('data', data)
+                document.querySelector('#progress').setAttribute('value', data.progressPercentage)
+                console.log('SSE Data', e.data)
+            });
+        }
+        document.addEventListener("DOMContentLoaded", listen);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/fetch-event-source@1.0.0-alpha.2/index.min.js"></script>
+
+{% endblock header %}
+
+{% block main %}
+
+<div class="flex flex-col sm:w-1/2 h-full w-full max-w-380 border border-gray-200 p-4 rounded-md">
+    <header class='text-2xl flex-auto w-full flex items-center max-h-4'>
+        <h3 class='text-center w-full'>
+            <a href='{{url_for_workflow(id)}}' class='link link-primary'>Transfer {{id}}</a>
+        </h3>
+    </header>
+    <div class='flex-auto'>
+        <progress id='progress' class="progress progress-primary w-56" value="0" max="100"></progress>
+    </div>
+</div>
+
+
+{% endblock main %}
+
+{% block leftcol %}
+    {% include '_nav.html' %}
+{% endblock leftcol %}
+
+{% block rightcol %}
+<div>
+    <p>Here is a sexy component</p>
+</div>
+{% endblock rightcol %}
+
+{% block footer %}
+<footer>
+    <div>Here is a footer</div>
+</footer>
+{% endblock footer %}

@@ -1,108 +1,22 @@
 {% extends "base.html" %}
 
 {% block header %}
-    {% include 'header.html' %}
+    {% include '_header.html' %}
+    <script type='application/javascript'>
+        // shutup module
+        var exports = {}
+        const init = () => {
+            document.querySelector('#id').value = humanId({separator: '-', capitalize: false, maxLength: 7})
+        }
+        document.addEventListener("DOMContentLoaded", init);
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/human-id@4.1.1/dist/index.min.js"></script>
 {% endblock header %}
 
 {% block main %}
 <main class='h-full w-full flex flex-col items-center'>
-
-    <form action='/transfers' method='post' class="flex flex-col items-stretch sm:w-1/2 h-full w-full max-w-380 border border-gray-200 p-4 rounded-md">
-        <input type='hidden' name='_METHOD' value='PUT'/>
-        <header class='text-2xl flex-auto w-full flex items-center'>
-            <h3 class='text-center w-full'>Transfer money</h3>
-        </header>
-        <div class='flex-auto form-control w-full'>
-            <label for="from-account" class="label"><span class='label-text'>From Account</span></label>
-            <select
-                    id="from-account"
-                    name='from_account'
-                    class="select select-bordered"
-                    required
-            >
-                <option disabled selected value>Select Account Type</option>
-                {% for acct in form.account_types %}
-                    <option value='{{acct.id}}'>{{acct.label}}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class='flex-auto form-control'>
-            <label
-                    for="to-account"
-                    class="label"
-            ><span class='label-text'>To Account</span></label>
-            <select
-                    id="to-account"
-                    name='to_account'
-                    class="select select-bordered"
-                    required
-            >
-                <option disabled selected value>Select Recipient</option>
-                {% for rec in form.eligible_recipients %}
-                <option value='{{rec.id}}'>{{rec.label}}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class='flex-auto form-control'>
-            <label for="amount" class="label w-full max-w-xs">
-                <span class='label-text'>Amount</span>
-            </label>
-            <div class='input input-bordered flex items-center gap-2'>
-                <span>$</span>
-                <input
-                        id="amount"
-                        type="number"
-                        name='amount'
-                        class="w-full max-x-xs"
-                        required/>
-            </div>
-
-        </div>
-        <div class="flex-auto form-control">
-            <label class='label' for="simulate"><span class='label-text'>Debug: Simulate</span> </label>
-            <select
-                    id="simulate"
-                    name='simulate_scenario'
-                    class="select select-bordered"
-            >
-                <option disabled selected value>Select Scenario</option>
-                {% for sc in form.scenarios %}
-                <option value='{{sc.id}}'>{{sc.label}}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="flex-auto form-control">
-            <h4 class='italic'>Schedule a recurring transfer</h4>
-            <div class='flex align-middle items-center'>
-                <label for="schedule-interval" class="label w-16 max-w-xs">
-                    <span class='label-text'>Every</span>
-                </label>
-                <input
-                        class='input input-bordered w-12'
-                        id="schedule-interval"
-                        type="number"
-                        name='schedule_interval'
-                        value='0'/>
-                <span class='p-4'>seconds</span>
-            </div>
-            <div class='flex align-middle items-center'>
-                <label for="schedule-count" class="label w-16 max-w-xs">
-                    <span class='label-text'>Up to</span>
-                </label>
-                <input
-                        id="schedule-count"
-                        type="number"
-                        name='schedule_count'
-                        class="input input-bordered w-12"
-                        value='0'/>
-                <span class='p-4'>times</span>
-
-            </div>
-        </div>
-
-        <button type='submit' class='btn btn-primary'>Transfer</button>
-    </form>
+    {% include '_transfer_form.html' %}
 </main>
 
 {% endblock main %}
