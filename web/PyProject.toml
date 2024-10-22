@@ -13,6 +13,7 @@ python = "^3.9"
 temporalio = "^1.6.0"
 poetry = "^1.8.3"
 quart = "^0.19.6"
+quart-cors = "^0.7.0"
 python-dotenv = "^1.0.1"
 
 [tool.poetry.dev-dependencies]

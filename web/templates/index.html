@@ -6,7 +6,7 @@
         // shutup module
         var exports = {}
         const init = () => {
-            document.querySelector('#id').value = humanId({separator: '-', capitalize: false, maxLength: 7})
+            document.querySelector('#id').value = `transfer-${humanId({separator: '-', capitalize: false, maxLength: 7})}`
         }
         document.addEventListener("DOMContentLoaded", init);
 

@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.11/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <link rel="stylesheet" type='text/css' href="{{url_for('static',filename='dist/css/output.css')}}">
 
     <title>{% block title %}{{ app_info.name }}{% endblock title %}</title>
 </head>
 <body>
-    <div data-theme='light' class='h-screen w-screen'>
+    <div data-theme='corporate' class='h-screen w-screen'>
         <div class='grid grid-rows-6 grid-cols-12 gap-2 h-screen'>
             <header class='row-auto col-span-12'>
                 {% block header %}

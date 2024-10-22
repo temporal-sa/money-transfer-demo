@@ -115,3 +115,28 @@ In a new terminal, start the .NET Worker
 cd dotnet
 ./startcloudworker.sh
 ```
+
+#### Web Application
+
+Provide an `.env` for the entire stack by looking at `.env.template`.
+
+Run either with:
+```sh
+cd web && poetry run python main.py
+```
+
+OR, Run with [just](https://github.com/casey/just) and 
+```sh
+just run_web
+```
+
+#### HTTPS Support
+
+Mixing HTTP and HTTPS can be a pain, even for demos. 
+The Web Application supports HTTPS easily. You can provide cert by:
+```sh
+mkcert -install
+mkcert -client localhost
+```
+
+Then provide the cert location in the `.env` file for `WEB_CONNECTION_MTLS_XXX` settings.

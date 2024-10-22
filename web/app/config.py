@@ -1,14 +1,14 @@
 import os
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
-
-from flask import Flask, render_template, g
 
 load_dotenv()
 
 def get_config() -> dict:
+    web_url = urlparse(os.getenv('PUBLIC_WEB_URL'))
     return {
-        'name': 'Temporal Money Transfer',
+        'name': 'Temporal Payments',
         'temporal': {
             'connection': {
                 'target': os.getenv('TEMPORAL_CONNECTION_TARGET'),
@@ -22,4 +22,13 @@ def get_config() -> dict:
                 'task_queue': os.getenv('TEMPORAL_WORKER_TASK_QUEUE')
             }
         },
+        'web': {
+            'url': web_url,
+            'connection': {
+                'mtls': {
+                    'key_file': os.getenv('WEB_CONNECTION_MTLS_KEY_FILE'),
+                    'cert_chain_file': os.getenv('WEB_CONNECTION_MTLS_CERT_CHAIN_FILE')
+                }
+            }
+        }
     }
