@@ -56,6 +56,7 @@ def apply_app_info():
 def view_app_info():
     return dict(app_info=g.app_info)
 
+# this is a way to expose view helpers for things like url formatting in your templates
 @app.context_processor
 def url_utils():
     def url_for_namespace():

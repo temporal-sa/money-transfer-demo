@@ -118,7 +118,10 @@ cd dotnet
 
 #### Web Application
 
-Provide an `.env` for the entire stack by looking at `.env.template`.
+Instead of Flask, this application uses [Quart](https://quart.palletsprojects.com/en/latest/index.html).
+If you know Flask, you will "get" Quart, but if you want a doc [here you go](https://quart.palletsprojects.com/en/latest/how_to_guides/flask_migration.html#flask-migration).
+
+To make this easier, I provide an `.env` for the entire stack by looking at [.env.template](.env.template).
 
 Run either with:
 ```sh
@@ -129,6 +132,26 @@ OR, Run with [just](https://github.com/casey/just) and
 ```sh
 just run_web
 ```
+
+###### HTML
+
+HTML is templated with [jinja](https://jinja.palletsprojects.com/en/3.1.x/).
+
+There is some use of `block` to achieve the [base layout](web/templates/base.html).
+
+You can provide helper functions like I do in the `@app.context_processor` [here](web/app/index.py).
+
+###### CSS
+You can either `cd web && npm run codegen` or `just codegen`.
+This will watch your css files configured by [tailwind.config.js](tailwind.config.js) and recompile.
+
+###### JavaTypeScript
+
+There are two  snippets [here](web/templates/index.html) and [here](web/templates/transfer.html).
+
+The `transfer` template uses a Server-Side Event client to connect to `/sub/{{workflowid}}` in order
+to receive updates from the Workflow progress. It maps the incoming data to relevant HTML elements
+using plain ole DOM (`querySelector`). If you used jQuery, you can use `querySelector`.
 
 #### HTTPS Support
 
