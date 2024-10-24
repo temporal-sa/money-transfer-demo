@@ -75,7 +75,9 @@ def url_utils():
         'url_for_workflow': url_for_workflow
     })
 
-
+@app.route('/', methods=['GET'])
+async def index():
+    return redirect(location='/transfers')
 
 @app.route('/debug')
 async def debug():
@@ -98,13 +100,13 @@ async def layout():
 
 
 @app.route('/transfers', methods=['GET'])
-async def index():
+async def get_transfers():
     form = await get_transfer_money_form()
     return await render_template(template_name_or_list='index.html', form=form)
 
 
 @app.route('/transfers',methods=['POST','PUT'])
-async def transfers():
+async def write_transfers():
     temporal_client = cast(Client, app.clients.temporal)
     data = await request.form
     wid = data.get('id','transfer-{id}'.format(id=secrets.choice(string.ascii_lowercase + string.digits)))
@@ -123,6 +125,13 @@ async def transfers():
                                                   )
 
     return redirect(location='/transfers/{id}?type={wf_type}'.format(id=handle.id, wf_type=wf_type))
+
+@app.route('/approvals/<workflow_id>', methods=['PUT','POST'])
+async def approve(workflow_id):
+    temporal_client = cast(Client, app.clients.temporal)
+    handle = temporal_client.get_workflow_handle(workflow_id)
+    await handle.signal(signal='approveTransfer')
+    return redirect(location=f'/transfers/{workflow_id}')
 
 @app.get('/transfers/<id>')
 async def transfer(id):

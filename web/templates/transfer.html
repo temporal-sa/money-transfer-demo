@@ -3,6 +3,8 @@
 {% block header %}
     {% include '_header.html' %}
     <script type='application/javascript'>
+        const params = new URLSearchParams(window.location.search)
+        const approvalRequired = params.has('type', 'AccountTransferWorkflowHumanInLoop')
         const listen = () => {
 
             const eventSource = new FetchEventSource(`/sub/{{id}}`);
@@ -16,6 +18,8 @@
                 let radialProgressEl = document.querySelector('#radial-progress')
                 let totalAmountCentsEl = document.querySelector('.total-amount-cents')
                 let transactionStatusEl = document.querySelector('.transaction-status')
+                let approvalFormEl = document.querySelector('.approval-form')
+                let chargeIdEl = document.querySelector('.charge-id')
 
                 progressEl.setAttribute('value', data.progressPercentage)
                 radialProgressEl.setAttribute('style','--value:' + data.progressPercentage+';')
@@ -23,14 +27,23 @@
                 console.log('SSE Data', e.data)
                 transactionStatusEl.innerHTML = data?.transferState
                 let states = {
-                    'starting': 'badge-secondary',
+                    'starting': 'badge-ghost',
                     'finished': 'badge-accent',
                     'running': 'badge-primary',
                 }
-                const badges = Object.keys(states).map(key => data[key]);
+                const badges = Object.keys(states).map(key => states[key]);
                 console.log('badges', badges)
                 transactionStatusEl.classList.remove(...badges)
                 transactionStatusEl.classList.add(states[data?.transferState])
+                chargeIdEl.innerHTML = data.chargeResult.chargeId
+
+                if(approvalRequired){
+                    approvalFormEl.removeAttribute('disabled')
+                    approvalFormEl.classList.remove('hidden')
+                } else {
+                    approvalFormEl.setAttribute('disabled','disabled')
+                    approvalFormEl.classList.add('hidden')
+                }
 
                 if (data.failure) {
                     transactionStatus.innerHTML = 'failed'
@@ -67,8 +80,8 @@
         <span class='transaction-status badge'>running</span>
         <span class='text-right  italic'>Amount</span>
         <span class='total-amount-cents'></span>
-        <span class='text-right  italic'>Transaction ID</span>
-        <span class='transaction-id'></span>
+        <span class='text-right  italic'>Charge ID</span>
+        <span class='charge-id'></span>
     </div>
     <div role="alert" class="alert alert-error hidden">
         <span class='failure'></span>
@@ -84,9 +97,12 @@
 {% endblock leftcol %}
 
 {% block rightcol %}
-<div>
-    <p>Here is a sexy component</p>
-</div>
+<form action='/approvals/{{id}}' method='post' class="approval-form hidden border border-secondary p-4 rounded-md card-normal">
+    <fieldset>
+        <input type='hidden' name='_METHOD' value='PUT'/>
+        <button class='btn btn-primary'>Approve Transfer</button>
+    </fieldset>
+</form>
 {% endblock rightcol %}
 
 {% block footer %}
