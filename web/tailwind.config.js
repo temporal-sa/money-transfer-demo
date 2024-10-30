@@ -4,7 +4,8 @@ import daisyui from "daisyui"
 module.exports = {
   content: [
     "./templates/**/*.html",
-    "./static/src/**/*.js"
+    "./static/src/**/*.js",
+      "./static/src/**/*."
   ],
   theme: {
     extend: {},
