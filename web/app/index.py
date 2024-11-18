@@ -112,7 +112,7 @@ async def write_transfers():
     wid = data.get('id','transfer-{id}'.format(id=secrets.choice(string.ascii_lowercase + string.digits)))
     wf_type = data.get('scenario',  DEFAULT_WORKFLOW_TYPE)
     params = TransferInput(
-        amount=data.get('amount'),
+        amount=int(data.get('amount')),
         fromAccount=data.get('from_account'),
         toAccount=data.get('to_account'),
     )
