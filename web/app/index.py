@@ -17,6 +17,7 @@ from app.config import get_config
 from app.messages import TransferInput
 from app.models import DEFAULT_WORKFLOW_TYPE
 from app.views import get_transfer_money_form, ServerSentEvent
+from app.list_workflows import TransferLister
 
 load_dotenv()
 app = Quart(__name__, template_folder='../templates', static_folder='../static')
@@ -149,6 +150,45 @@ async def sub(workflow_id):
             print('querying {workflow_id}'.format(workflow_id=workflow_id))
             handle = app.clients.temporal.get_workflow_handle(workflow_id)
             state = await handle.query('transferStatus')
+            print(state)
+            event = ServerSentEvent(data=json.dumps(state), retry=None, id=None,event=None)
+            yield event.encode()
+            await sleep(2)
+    response = await make_response(
+        async_generator(),
+        {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Transfer-Encoding': 'chunked',
+        },
+    )
+    response.timeout = None
+    return response
+
+@app.get("/sub/list")
+async def sub_list():
+    if "text/event-stream" not in request.accept_mimetypes:
+        abort(400)
+    @stream_with_context
+    async def async_generator():
+        while True:
+            print('listing transfers')
+            
+            lister = TransferLister(client=app.clients.temporal, temporal_config=cfg)
+            workflows = await lister.list_workflows()
+            
+            for workflow in workflows:
+                print(
+                    f"ID: {workflow.workflow_id}\n"
+                    f"Status: {workflow.workflow_status}\n"
+                    f"Run ID: {workflow.run_id}\n"
+                    f"Type: {workflow.workflow_type}\n"
+                    f"Started: {workflow.start_time}\n"
+                    f"Closed: {workflow.close_time or 'Still running'}\n"
+                    f"Task Queue: {workflow.task_queue}\n"
+                )
+            
+            state = workflows
             print(state)
             event = ServerSentEvent(data=json.dumps(state), retry=None, id=None,event=None)
             yield event.encode()

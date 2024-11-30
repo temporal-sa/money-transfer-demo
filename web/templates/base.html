@@ -13,37 +13,106 @@
 </head>
 <body>
     <div data-theme='dark' class='h-screen w-screen'>
-        <div class='grid grid-rows-6 grid-cols-12 gap-2 h-screen'>
-            <header class='row-auto col-span-12'>
+        <div class='grid grid-cols-12 h-screen grid-rows-[auto_1fr_auto]'>
+            <header class='row-auto col-span-12 py-6'>
                 {% block header %}
                 {% endblock header %}
             </header>
 
-            <nav class='col-span-2 row-span-4'>
-                {% block leftcol %}
-                {% endblock leftcol %}
+            <div class='col-span-12 grid grid-cols-12 overflow-auto'> 
 
-                <!-- Navigation -->
-            </nav>
+                <nav class='col-span-2'>
+                    {% block leftcol %}
+                    {% endblock leftcol %}
 
-            <main class='col-span-8 row-span-4'>
-                {% block main %}
-                {% endblock main %}
+                    <!-- Navigation -->
+                </nav>
 
-                <!-- Main content -->
-            </main>
+                <main class='col-span-8 overflow-auto p-8'>
+                    {% block main %}
+                    {% endblock main %}
 
-            <aside class='col-span-2 row-span-4'>
-                {% block rightcol %}
-                {% endblock rightcol %}
+                    <!-- Main content -->
+                </main>
 
-                <!-- Sidebar / Ads -->
-            </aside>
+                <aside class='col-span-2'>
+                    {% block rightcol %}
+                    {% endblock rightcol %}
 
-            <footer class='row-auto col-span-12'>
+                    <!-- Sidebar / Ads -->
+                </aside>
+
+            </div>
+
+            <footer class='col-span-12'>
+                <div class="overflow-x-auto max-h-48">
+                    <table class="table table-zebra w-full table-pin-rows">
+                        <thead class="sticky top-0 bg-base-200">
+                            <tr>
+                                <th>Workflow ID</th>
+                                <th>Status</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workflow-table-body">
+                            <!-- Rows will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            
+                <script type='application/javascript'>
+                    function getStatusBadgeClass(status) {
+                        const statusClasses = {
+                            'RUNNING': 'badge badge-primary',
+                            'COMPLETED': 'badge badge-success',
+                            'FAILED': 'badge badge-error',
+                            'TERMINATED': 'badge badge-warning',
+                            'TIMED_OUT': 'badge badge-error',
+                            'CANCELED': 'badge badge-secondary'
+                        }
+                        return statusClasses[status] || 'badge badge-ghost'
+                    }
+            
+                    function formatDateTime(dateStr) {
+                        return new Date(dateStr).toLocaleString()
+                    }
+            
+                    function updateWorkflowTable(workflows) {
+                        const tableBody = document.getElementById('workflow-table-body')
+                        tableBody.innerHTML = workflows.map(workflow => `
+                            <tr class="hover">
+                            <td class="font-mono text-sm">
+                                <a href='${workflow.url}' class='link link-accent' target='_blank'>${workflow.workflow_id}</a>
+                            </td>                                
+                            <td><span class="${getStatusBadgeClass(workflow.workflow_status)}">${workflow.workflow_status}</span></td>
+                                <td class="text-sm">${formatDateTime(workflow.start_time)}</td>
+                                <td class="text-sm">${workflow.close_time ? formatDateTime(workflow.close_time) : '--'}</td>
+                            </tr>
+                        `).join('')
+                    }
+            
+                    const listListen = () => {
+                        const eventSource = new FetchEventSource(`/sub/list`);
+                        eventSource.addEventListener('open', () => console.log('SSE Open'));
+                        eventSource.addEventListener('error', (err) => console.log('SSE Error', err));
+                        eventSource.addEventListener('message', (e) => {
+                            const data = JSON.parse(e.data)
+                            console.log('SSE Data', data)
+                            
+                            if (Array.isArray(data)) {
+                                updateWorkflowTable(data)
+                            }
+            
+                        });
+                    }
+                    
+                    document.addEventListener("DOMContentLoaded", listListen);
+                </script>
+                <script src="https://cdn.jsdelivr.net/npm/fetch-event-source@1.0.0-alpha.2/index.min.js"></script>
+            
                 {% block footer %}
                 {% endblock footer %}
-                <!-- Footer content -->
             </footer>
         </div>
     </div>
