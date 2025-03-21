@@ -79,31 +79,33 @@ func getClientOptions() client.Options {
 	tlsCertPath := getEnv("TEMPORAL_CERT_PATH", "")
 	tlsKeyPath := getEnv("TEMPORAL_KEY_PATH", "")
 
-	switch {
-	case apiKey != "":
-    clientOptions.ConnectionOptions = client.ConnectionOptions{
-      TLS: &tls.Config{},
-      DialOptions: []grpc.DialOption{
-        grpc.WithUnaryInterceptor(
-          func(ctx context.Context, method string, req any, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-            return invoker(
-              metadata.AppendToOutgoingContext(ctx, "temporal-namespace", namespace),
-              method,
-              req,
-              reply,
-              cc,
-              opts...,
-            )
-          },
-        ),
-      },
-    }
-    clientOptions.Credentials = client.NewAPIKeyStaticCredentials(apiKey)
-	case tlsCertPath != "" && tlsKeyPath != "":
+	if apiKey != "" {
+		clientOptions.ConnectionOptions = client.ConnectionOptions{
+			TLS: &tls.Config{},
+			DialOptions: []grpc.DialOption{
+				grpc.WithUnaryInterceptor(
+					func(ctx context.Context, method string, req any, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+						return invoker(
+							metadata.AppendToOutgoingContext(ctx, "temporal-namespace", namespace),
+							method,
+							req,
+							reply,
+							cc,
+							opts...,
+						)
+					},
+				),
+			},
+		}
+
+		clientOptions.Credentials = client.NewAPIKeyStaticCredentials(apiKey)
+
+	} else if tlsCertPath != "" && tlsKeyPath != "" {
 		cert, err := tls.LoadX509KeyPair(tlsCertPath, tlsKeyPath)
 		if err != nil {
 			log.Fatalln("Unable to load cert and key pair", err)
 		}
+
 		clientOptions.ConnectionOptions = client.ConnectionOptions{
 			TLS: &tls.Config{
 				Certificates: []tls.Certificate{cert},

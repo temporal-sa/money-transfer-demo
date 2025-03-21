@@ -49,12 +49,38 @@ public class TemporalClient {
     }
 
     public static WorkflowServiceStubs getWorkflowServiceStubs() throws FileNotFoundException, SSLException {
-        WorkflowServiceStubsOptions.Builder workflowServiceStubsOptionsBuilder = getWorkflowServiceStubsOptionsBuilder();
+        WorkflowServiceStubs service = null;
 
-        return getWorkflowServiceStubs(workflowServiceStubsOptionsBuilder);
+        if (!ServerInfo.getAddress().equals("localhost:7233")) {
+            // if not local server, then use the workflowServiceStubsOptionsBuilder
+            service = WorkflowServiceStubs.newServiceStubs(getWorkflowServiceStubsOptionsBuilder().build());
+        } else {
+            service = WorkflowServiceStubs.newLocalServiceStubs();
+        }
+
+        return service;
     }
 
-    public static WorkflowServiceStubs getWorkflowServiceStubs(WorkflowServiceStubsOptions.Builder workflowServiceStubsOptionsBuilder) throws FileNotFoundException, SSLException {
+    /*
+        The Temporal client will insert headers required for API keys. If the service client is used, API key
+        headers have to be manually added.
+     */
+    public static WorkflowServiceStubs getWorkflowServiceStubsWithHeaders() throws FileNotFoundException, SSLException {
+        WorkflowServiceStubsOptions.Builder workflowServiceStubsOptionsBuilder = getWorkflowServiceStubsOptionsBuilder();
+
+        if (!ServerInfo.getApiKey().isEmpty()) {
+            Metadata.Key<String> namespace = Metadata.Key.of("temporal-namespace", Metadata.ASCII_STRING_MARSHALLER);
+
+            Metadata metadata = new Metadata();
+            metadata.put(namespace, ServerInfo.getNamespace());
+
+            workflowServiceStubsOptionsBuilder
+                    .setChannelInitializer(
+                            (channel) -> {
+                                channel.intercept(MetadataUtils.newAttachHeadersInterceptor(metadata));
+                            });
+        }
+
         WorkflowServiceStubs service = null;
 
         if (!ServerInfo.getAddress().equals("localhost:7233")) {
@@ -91,27 +117,6 @@ public class TemporalClient {
     }
 
     public static ScheduleClient getScheduleClient() throws FileNotFoundException, SSLException {
-        WorkflowServiceStubs service = null;
-
-        // need to manually set the namespace header when using API keys and the schedule client
-        if (ServerInfo.getApiKey().isEmpty()) {
-          service = getWorkflowServiceStubs();
-        } else {
-            Metadata.Key<String> namespace = Metadata.Key.of("temporal-namespace", Metadata.ASCII_STRING_MARSHALLER);
-
-            Metadata metadata = new Metadata();
-            metadata.put(namespace, ServerInfo.getNamespace());
-
-            WorkflowServiceStubsOptions.Builder workflowServiceStubsOptionsBuilder = getWorkflowServiceStubsOptionsBuilder();
-            workflowServiceStubsOptionsBuilder
-                    .setChannelInitializer(
-                        (channel) -> {
-                            channel.intercept(MetadataUtils.newAttachHeadersInterceptor(metadata));
-                        });
-
-            service = getWorkflowServiceStubs(workflowServiceStubsOptionsBuilder);
-        }
-
         ScheduleClientOptions.Builder builder = ScheduleClientOptions.newBuilder();
 
         // if environment variable ENCRYPT_PAYLOADS is set to true, then use CryptCodec
@@ -128,7 +133,6 @@ public class TemporalClient {
         System.out.println("<<<<SERVER INFO>>>>:\n " + ServerInfo.getServerInfo());
         ScheduleClientOptions clientOptions = builder.setNamespace(ServerInfo.getNamespace()).build();
 
-        ScheduleClient client = ScheduleClient.newInstance(service, clientOptions);
-        return client;
+        return ScheduleClient.newInstance(getWorkflowServiceStubsWithHeaders(), clientOptions);
     }
 }

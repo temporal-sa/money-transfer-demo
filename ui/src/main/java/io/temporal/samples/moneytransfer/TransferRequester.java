@@ -17,7 +17,7 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import javax.net.ssl.SSLException;
 import java.io.FileNotFoundException;
 
-import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubs;
+import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubsWithHeaders;
 
 public class TransferRequester {
 
@@ -88,7 +88,7 @@ public class TransferRequester {
     }
 
     private static String getWorkflowStatus(String workflowId) throws FileNotFoundException, SSLException {
-        WorkflowServiceStubs service = getWorkflowServiceStubs();
+        WorkflowServiceStubs service = getWorkflowServiceStubsWithHeaders();
         WorkflowServiceGrpc.WorkflowServiceBlockingStub stub = service.blockingStub();
         DescribeWorkflowExecutionRequest request = DescribeWorkflowExecutionRequest.newBuilder()
                 .setNamespace(ServerInfo.getNamespace())
