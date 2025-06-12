@@ -1,0 +1,43 @@
+name: Ruby Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'ruby/**'
+      - '.github/workflows/ruby-tests.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'ruby/**'
+      - '.github/workflows/ruby-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ruby
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+        working-directory: ./ruby
+
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Run tests
+      run: bundle exec rspec
+
+    - name: Upload coverage to Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: ruby/coverage
+        if-no-files-found: ignore

@@ -1,0 +1,20 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+ruby '~> 3.2.0'
+
+gem 'temporalio'
+gem 'grpc', '~> 1.59.0'
+gem 'openssl', '~> 3.0'
+gem 'json', '~> 2.6'
+gem 'logger', '~> 1.5'
+gem 'activesupport'
+
+group :development, :test do
+  gem 'rspec', '~> 3.12'
+  gem 'rubocop', '~> 1.57'
+  gem 'rubocop-rspec', '~> 2.25'
+  gem 'pry', '~> 0.14'
+  gem 'simplecov', '~> 0.22'
+end

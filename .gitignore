@@ -16,3 +16,5 @@ bin/
 .github/workflows/SA_TOKEN
 .local/
 setcloudenv.sh
+/ruby/coverage
+.vscode
