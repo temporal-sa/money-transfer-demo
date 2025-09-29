@@ -11,6 +11,7 @@ RUN go build \
     -o /go/bin/app ./worker
 COPY --from=cosmtrek/air /go/bin/air /go/bin/air
 ENTRYPOINT [ "air" ]
+CMD [ "--build.cmd", "go build -o ./tmp/main ./worker" ]
 
 FROM scratch
 WORKDIR /app
