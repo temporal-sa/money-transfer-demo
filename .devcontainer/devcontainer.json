@@ -6,7 +6,7 @@
     "ghcr.io/devcontainers/features/dotnet:2": {},
     "ghcr.io/devcontainers/features/go:1": {},
     "ghcr.io/devcontainers/features/java:1": {
-      "version": "lts",
+      "version": "21-tem",
       "installGradle": true
     },
     "ghcr.io/devcontainers/features/node:1": {},
