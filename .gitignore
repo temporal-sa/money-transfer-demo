@@ -18,3 +18,4 @@ bin/
 setcloudenv.sh
 /ruby/coverage
 .vscode
+tmp
