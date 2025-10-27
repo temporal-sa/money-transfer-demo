@@ -7,6 +7,8 @@ export TEMPORAL_ADDRESS=<namespace>.<accountId>.tmprl.cloud:7233
 export TEMPORAL_NAMESPACE=<namespace>.<accountId>
 export TEMPORAL_CERT_PATH=<path/to/client.pem>
 export TEMPORAL_KEY_PATH=<path/to/client.key>
+# use mtls certs or api key
+# export TEMPORAL_API_KEY=<apikey>
 
 # the alternate, over-engineered :), way using the temporal cli to populate the vars
 # TEMPORAL_ENV=<env>
