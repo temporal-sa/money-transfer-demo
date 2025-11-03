@@ -1,0 +1,6 @@
+apiVersion: temporal.io/v1alpha1
+kind: TemporalConnection
+metadata:
+  name: local-temporal
+spec:
+  hostPort: "host.docker.internal:7233"
