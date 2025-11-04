@@ -1,8 +1,8 @@
-nodejs 22.8.0
-java temurin-17.0.12+7
-golang 1.23.1
-python 3.12.6
-poetry 1.8.3
-dotnet-core 9.0.303
-pnpm 9.10.0
-ruby 3.2.6
+dotnet-core 9.0.306
+golang 1.23.12
+java temurin-17.0.17+10
+nodejs 22.21.0
+pnpm 9.15.9
+poetry 1.8.5
+python 3.12.12
+ruby 3.2.9
