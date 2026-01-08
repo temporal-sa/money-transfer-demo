@@ -16,4 +16,3 @@ export TEMPORAL_KEY_PATH=<path/to/client.key>
 # export TEMPORAL_NAMESPACE=$(temporal env get --env ${TEMPORAL_ENV} --key namespace -o json | jq -r '.[].value')
 # export TEMPORAL_CERT_PATH=$(temporal env get --env ${TEMPORAL_ENV} --key tls-cert-path -o json | jq -r '.[].value')
 # export TEMPORAL_KEY_PATH=$(temporal env get --env ${TEMPORAL_ENV} --key tls-key-path -o json | jq -r '.[].value')
-# export TEMPORAL_KEY_PKCS8_PATH=$(temporal env get --env ${TEMPORAL_ENV} --key tls-key-pkcs8-path -o json | jq -r '.[].value')
