@@ -1,0 +1,24 @@
+[package]
+name = "FirstWorker"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+temporalio-sdk = "0.4.0"
+temporalio-macros = "0.4.0"
+temporal-sdk-core-api = "0.1.0"
+temporalio-sdk-core = "0.4.0"
+temporalio-client = "0.4.0"
+futures-util = "0.3.32"
+anyhow = "1.0.102"
+temporalio-common = "0.4.0"
+futures = "0.3.32"
+serde = "1.0.228"
+tokio = "1.52.3"
+serde_json = "1.0.150"
+uuid = { version = "1.23.4", features = ["v4"] }
+tracing = "0.1.44"
+tracing-subscriber = "0.3.23"
+url = "2.5"
+aes-gcm = "0.10"
+prost = "0.14"
