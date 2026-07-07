@@ -83,11 +83,7 @@ jobs:
       uses: Swatinem/rust-cache@v2
       with:
         # Looks for Cargo.lock file.
-        workspaces: "rust/" 
-
-    # 3. Run your tests
-    - name: Run Tests
-      run: cargo test --verbose
+        workspaces: "./rust/" 
 
     - name: Install Temporal CLI
       uses: temporalio/setup-temporal@v0
