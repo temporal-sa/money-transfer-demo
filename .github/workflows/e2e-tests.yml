@@ -76,6 +76,19 @@ jobs:
         bundler-cache: true
         working-directory: ./ruby
 
+    - name: Setup Rust Toolchain
+      run: rustup default stable && rustup update stable
+
+    - name: Setup Cargo Cache
+      uses: Swatinem/rust-cache@v2
+      with:
+        # Looks for Cargo.lock file.
+        workspaces: "rust/" 
+
+    # 3. Run your tests
+    - name: Run Tests
+      run: cargo test --verbose
+
     - name: Install Temporal CLI
       uses: temporalio/setup-temporal@v0
 
