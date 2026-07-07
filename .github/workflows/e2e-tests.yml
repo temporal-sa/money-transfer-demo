@@ -110,6 +110,10 @@ jobs:
       working-directory: ./go
       run: go mod download
 
+    - name: Install protoc
+      working-directory: ./
+      run: sudo apt-get install -y protobuf-compiler
+
     - name: Build Rust worker
       working-directory: ./rust
       run: cargo build --bin worker
