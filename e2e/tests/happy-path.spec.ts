@@ -45,16 +45,12 @@ async function switchWorker(workerDir: string) {
   }
   await sleep(2000);
   
-  let sleep_time = 3000;
-  if(workerDir === '../rust') {
-    sleep_time = 85000;
-  }
   workerProcess = spawn('./startlocalworker.sh', [], {
     cwd: workerDir,
     stdio,
     detached: true
   });
-  await sleep(sleep_time);
+  await sleep(3000);
   console.log('✅ New worker started');
 }
 
