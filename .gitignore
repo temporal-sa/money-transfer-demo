@@ -19,3 +19,8 @@ setcloudenv.sh
 /ruby/coverage
 .vscode
 tmp
+
+# Unignore the Rust binary source directory
+!/rust/src/bin/
+!/rust/src/bin/**
+
