@@ -2,8 +2,10 @@
 name = "MoneyTransfer"
 version = "0.1.0"
 edition = "2024"
-path = "src/bin/worker.rs"
 
+[[bin]]
+name = "worker"
+path = "src/bin/worker.rs"
 
 [dependencies]
 temporalio-sdk = "0.4.0"
