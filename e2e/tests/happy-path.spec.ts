@@ -50,7 +50,7 @@ async function switchWorker(workerDir: string) {
     stdio,
     detached: true
   });
-  await sleep(9000);
+  await sleep(45000);
   console.log('✅ New worker started');
 }
 
