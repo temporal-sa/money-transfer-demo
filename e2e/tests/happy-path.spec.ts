@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { spawn, ChildProcess } from 'child_process';
+import { spawn, ChildProcess, execSync } from 'child_process';
 import { promisify } from 'util';
 import { killProcess } from './utils';
 
@@ -9,6 +9,27 @@ let workerProcess: ChildProcess | null;
 
 const isVerbose = process.env.VERBOSE === 'true';
 const stdio = isVerbose ? 'inherit' : 'pipe';
+
+test.beforeAll(async () => {
+  try {
+    // Check if protoc is already available
+    execSync('protoc --version', { stdio: 'ignore' });
+    console.log('✅ protoc is already installed.');
+  } catch (error) {
+    console.log('⏳ protoc not found. Auto-installing system packages...');
+    
+    try {
+      // Execute the system commands to install protobuf
+      execSync('sudo apt-get update && sudo apt-get install -y protobuf-compiler', { 
+        stdio: 'inherit' 
+      });
+      console.log('✅ protoc successfully installed via apt-get.');
+    } catch (installError) {
+      console.error('❌ Failed to install protoc:', installError);
+      throw new Error('Test environment setup failed: missing protoc compiler');
+    }
+  }
+});
 
 test.afterAll(async () => {
   if (workerProcess) {
