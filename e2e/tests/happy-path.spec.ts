@@ -45,7 +45,8 @@ const allWorkers = [
   { name: 'dotnet', dir: '../dotnet' },
   { name: 'java', dir: '../java' },
   { name: 'python', dir: '../python' },
-  { name: 'typeScript', dir: '../typescript' }
+  { name: 'typeScript', dir: '../typescript' },
+  { name: 'rust', dir: '../rust' }
 ];
 
 const onlyWorker = process.env.ONLY_WORKER;
