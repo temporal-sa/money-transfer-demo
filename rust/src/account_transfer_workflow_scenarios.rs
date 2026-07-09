@@ -5,7 +5,7 @@ use temporalio_common::protos::temporal::api::common::v1::RetryPolicy;
 use temporalio_macros::{workflow, workflow_methods};
 use temporalio_sdk::{
     ActivityOptions, ApplicationFailure, LocalActivityOptions, TimerOptions, WorkflowContext,
-    WorkflowContextView, WorkflowResult, WorkflowTermination,
+    WorkflowContextView, WorkflowResult, WorkflowTermination, SyncWorkflowContext
 };
 use tracing::{error, info, warn};
 
@@ -42,7 +42,7 @@ macro_rules! account_transfer_scenario {
             const SEARCH_ATTRIBUTE: &str = "Step";
 
             #[init]
-            pub fn new(ctx: &WorkflowContextView) -> Self {
+            fn new(ctx: &WorkflowContextView) -> Self {
                 Self {
                     workflow_type: ctx.workflow_type.clone(),
                     progress: 0u64,
@@ -207,23 +207,19 @@ macro_rules! account_transfer_scenario {
             }
 
             #[signal(name = "approveTransfer")]
-            pub async fn approve_transfer_signal(ctx: &mut WorkflowContext<Self>) {
+            pub fn approve_transfer_signal(&mut self, _ctx: &mut SyncWorkflowContext<Self>) {
                 info!("Approve Signal Received");
-                ctx.state_mut(|s| {
-                    if s.transfer_state == "waiting" {
-                        s.approved = true;
-                    } else {
-                        info!("Approval not applied. Transfer is not waiting for approval");
-                    }
-                });
-            }
+                if self.transfer_state == "waiting" {
+                    self.approved = true;
+                } else {
+                    info!("Approval not applied. Transfer is not waiting for approval");
+                }
+             }
 
             #[update(name = "approveTransferUpdate")]
-            pub async fn approve_transfer_update(ctx: &mut WorkflowContext<Self>) -> String {
+            pub fn approve_transfer_update(&mut self, _ctx: &mut SyncWorkflowContext<Self>) -> String {
                 info!("Approve Update Validated: Approving Transfer");
-                ctx.state_mut(|s| {
-                    s.approved = true;
-                });
+                self.approved = true;
                 "successfully approved transfer".to_string()
             }
 

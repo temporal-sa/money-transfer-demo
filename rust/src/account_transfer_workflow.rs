@@ -28,7 +28,7 @@ pub struct AccountTransferWorkflow {
 #[workflow_methods]
 impl AccountTransferWorkflow {
     #[init]
-    pub fn new(ctx: &WorkflowContextView) -> Self {
+    fn new(ctx: &WorkflowContextView) -> Self {
         Self {
             workflow_type: ctx.workflow_type.clone(),
             progress: 0u64,

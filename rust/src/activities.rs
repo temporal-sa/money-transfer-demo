@@ -1,4 +1,3 @@
-use std::sync::Arc;
 use std::time::Duration;
 use temporalio_common::protos::temporal::api::common::v1::RetryPolicy;
 use temporalio_macros::activities;
@@ -26,7 +25,6 @@ impl AccountTransferActivities {
 
     #[activity]
     pub async fn generate_idempotency_key(
-        self: Arc<Self>,
         _ctx: ActivityContext,
     ) -> Result<String, ActivityError> {
         let uuid = Uuid::new_v4().to_string();
@@ -35,7 +33,6 @@ impl AccountTransferActivities {
 
     #[activity]
     pub async fn validate(
-        self: Arc<Self>,
         _ctx: ActivityContext,
         input: TransferInput,
     ) -> Result<String, ActivityError> {
@@ -46,7 +43,6 @@ impl AccountTransferActivities {
 
     #[activity]
     pub async fn withdraw(
-        self: Arc<Self>,
         ctx: ActivityContext,
         input: ActivityInput,
     ) -> Result<String, ActivityError> {
@@ -61,8 +57,7 @@ impl AccountTransferActivities {
         if error? == API_DOWNTIME {
             // A transient error: return a plain (retryable) application failure so the
             // activity's retry policy keeps retrying until the API "recovers". `.into()`
-            // wraps it via ApplicationFailure::new (retryable) — matching Go's
-            // errors.New(...), Python's bare ApplicationError, and Java's RuntimeException.
+            // wraps it via ApplicationFailure::new (retryable)
             info!("Withdraw API unavailable, attempt {attempt}");
             return Err(anyhow::anyhow!("Withdraw activity failed, API unavailable").into());
         }
@@ -71,7 +66,6 @@ impl AccountTransferActivities {
 
     #[activity]
     pub async fn deposit(
-        self: Arc<Self>,
         ctx: ActivityContext,
         input: ActivityInput,
     ) -> Result<String, ActivityError> {
@@ -97,7 +91,6 @@ impl AccountTransferActivities {
 
     #[activity]
     pub async fn send_notification(
-        self: Arc<Self>,
         _ctx: ActivityContext,
         input: TransferInput,
     ) -> Result<String, ActivityError> {
@@ -111,7 +104,6 @@ impl AccountTransferActivities {
 
     #[activity]
     pub async fn undo_withdraw(
-        self: Arc<Self>,
         _ctx: ActivityContext,
         _message: String,
     ) -> Result<bool, ActivityError> {
