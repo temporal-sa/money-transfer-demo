@@ -1,16 +1,7 @@
-#[path = "../account_transfer_workflow.rs"]
 mod account_transfer_workflow;
-
-#[path = "../account_transfer_workflow_scenarios.rs"]
 mod account_transfer_workflow_scenarios;
-
-#[path = "../activities.rs"]
 mod activities;
-
-#[path = "../shared.rs"]
 mod shared;
-
-#[path = "../codec.rs"]
 mod codec;
 
 use crate::account_transfer_workflow::AccountTransferWorkflow;
@@ -82,12 +73,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
 
     let worker_options = WorkerOptions::new(task_queue)
-        .register_workflow::<AccountTransferWorkflow>()
-        .register_workflow::<AccountTransferHumanInLoop>()
-        .register_workflow::<AccountTransferAdvancedVisibility>()
-        .register_workflow::<AccountTransferRecoverableFailure>()
-        .register_workflow::<AccountTransferApiDowntime>()
-        .register_workflow::<AccountTransferInvalidAccount>()
+        .register_workflow::<AccountTransferWorkflow>()?
+        .register_workflow::<AccountTransferHumanInLoop>()?
+        .register_workflow::<AccountTransferAdvancedVisibility>()?
+        .register_workflow::<AccountTransferRecoverableFailure>()?
+        .register_workflow::<AccountTransferApiDowntime>()?
+        .register_workflow::<AccountTransferInvalidAccount>()?
         .register_activities(AccountTransferActivities)
         .build();
 
