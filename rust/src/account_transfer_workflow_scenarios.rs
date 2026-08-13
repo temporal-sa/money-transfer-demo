@@ -1,17 +1,17 @@
 #![allow(unreachable_pub)]
 use std::time::Duration;
-use temporalio_common::protos::coresdk::AsJsonPayloadExt;
 use temporalio_common::protos::temporal::api::common::v1::RetryPolicy;
+use temporalio_common::search_attributes::SearchAttributeKey;
 use temporalio_macros::{workflow, workflow_methods};
 use temporalio_sdk::{
-    ActivityOptions, ApplicationFailure, LocalActivityOptions, TimerOptions, WorkflowContext,
+    ActivityOptions, ApplicationFailure, TimerOptions, WorkflowContext,
     WorkflowContextView, WorkflowResult, WorkflowTermination, SyncWorkflowContext
 };
 use tracing::{error, info, warn};
 
 use crate::activities::AccountTransferActivities;
 use crate::shared::{
-    ActivityInput, DepositResponse, TransferInput, TransferOutput, TransferStatus,
+    ActivityInput, DepositResponse, TransferInput, TransferOutput, TransferStatus, TransferState
 };
 
 // The Rust SDK registers one workflow type name per struct and has no dynamic-workflow
@@ -28,7 +28,7 @@ macro_rules! account_transfer_scenario {
             deposit_response: DepositResponse,
             idempotency_key: String,
             sched_to_close_timeout: u64,
-            transfer_state: String,
+            transfer_state: TransferState,
             retry_policy: RetryPolicy,
             approval_time: u64,
             approved: bool,
@@ -39,19 +39,20 @@ macro_rules! account_transfer_scenario {
             const BUG: &str = "AccountTransferWorkflowRecoverableFailure";
             const NEEDS_APPROVAL: &str = "AccountTransferWorkflowHumanInLoop";
             const ADVANCED_VISIBILITY: &str = "AccountTransferWorkflowAdvancedVisibility";
-            const SEARCH_ATTRIBUTE: &str = "Step";
+            const SEARCH_ATTRIBUTE: SearchAttributeKey<String> =
+                SearchAttributeKey::keyword("Step");
 
             #[init]
             fn new(ctx: &WorkflowContextView) -> Self {
                 Self {
-                    workflow_type: ctx.workflow_type.clone(),
+                    workflow_type: ctx.workflow_type().to_string(),
                     progress: 0u64,
                     deposit_response: DepositResponse {
                         charge_id: "".to_string(),
                     },
                     idempotency_key: "".to_string(),
                     sched_to_close_timeout: 5u64,
-                    transfer_state: "".to_string(),
+                    transfer_state: TransferState::NoneType,
                     retry_policy: AccountTransferActivities::get_retry_policy(),
                     approval_time: 30u64,
                     approved: false,
@@ -70,25 +71,12 @@ macro_rules! account_transfer_scenario {
                     );
                 });
 
-                //generate the idempotency key with a local activity. UUID generation not supported yet
-                //in the Rust SDK.
-                let handle = ctx
-                    .start_local_activity(
-                        AccountTransferActivities::generate_idempotency_key,
-                        (),
-                        LocalActivityOptions {
-                            start_to_close_timeout: Some(Duration::from_secs(30)),
-                            ..Default::default()
-                        },
-                    )
-                    .await?;
-
-                //save the idempotency key and then hydrate a new variable for use by later activities
+                //generate the idempotency key within workflow context
+                let idempotency_key = ctx.uuid4();
                 ctx.state_mut(|s| {
-                    s.idempotency_key = handle;
+                    s.idempotency_key = idempotency_key.clone();
                     info!("Idempotency key set to {}", s.idempotency_key)
                 });
-                let idempotency_key = ctx.state(|s| s.idempotency_key.clone());
                 let amount = input.amount.into();
 
                 let activity_input = ActivityInput {
@@ -100,7 +88,7 @@ macro_rules! account_transfer_scenario {
                 //validate
                 Self::upsert_step(ctx, "Validate".to_string()).await;
                 let _handle = ctx
-                    .start_activity(
+                    .execute_activity(
                         AccountTransferActivities::validate,
                         input.clone(),
                         ActivityOptions::start_to_close_timeout(Duration::from_secs(30)),
@@ -109,12 +97,12 @@ macro_rules! account_transfer_scenario {
                 Self::update_progress(ctx, 25u64, 1u64).await;
 
                 if Self::NEEDS_APPROVAL == activity_input.workflow_type {
-                    let info = ctx.workflow_initial_info();
+                    let info = ctx.info();
                     info!(
                         "Waiting on 'approveTransfer' Signal or Update for workflow ID: {:?}",
-                        info.workflow_id
+                        info.workflow_id()
                     );
-                    Self::update_progress_status(ctx, 30, 0, Some("waiting".to_string())).await;
+                    Self::update_progress_status(ctx, 30, 0, TransferState::Waiting).await;
 
                     // Wait for approval for up to approval_time seconds.
                     let approval_time = ctx.state(|s| s.approval_time);
@@ -138,7 +126,7 @@ macro_rules! account_transfer_scenario {
                 //withdraw
                 Self::upsert_step(ctx, "Withdraw".to_string()).await;
                 let _handle = ctx
-                    .start_activity(
+                    .execute_activity(
                         AccountTransferActivities::withdraw,
                         activity_input.clone(),
                         ActivityOptions::start_to_close_timeout(Duration::from_secs(30)),
@@ -148,6 +136,7 @@ macro_rules! account_transfer_scenario {
 
                 // Recoverable-failure scenario: a panic fails the workflow *task* (not the
                 if Self::BUG == activity_input.workflow_type {
+                    //BUG: comment out the next two lines and uncomment the info! statement line
                     error!("There's a bug!");
                     panic!("Simulated bug - fix me!");
                     //info!("Bug is fixed!");
@@ -156,7 +145,7 @@ macro_rules! account_transfer_scenario {
                 //deposit
                 Self::upsert_step(ctx, "Deposit".to_string()).await;
                 let handle = match ctx
-                    .start_activity(
+                    .execute_activity(
                         AccountTransferActivities::deposit,
                         activity_input.clone(),
                         ActivityOptions::start_to_close_timeout(Duration::from_secs(30)),
@@ -168,7 +157,7 @@ macro_rules! account_transfer_scenario {
                         // Deposit failed unrecoverably: roll back the withdraw (saga
                         // compensation), then fail the workflow non-retryably.
                         warn!("Deposit failed unrecoverable error, reverting withdraw");
-                        ctx.start_activity(
+                        ctx.execute_activity(
                             AccountTransferActivities::undo_withdraw,
                             "reverting withdraw".to_string(),
                             ActivityOptions::start_to_close_timeout(Duration::from_secs(30)),
@@ -191,14 +180,14 @@ macro_rules! account_transfer_scenario {
                 //notification
                 Self::upsert_step(ctx, "Notify".to_string()).await;
                 let handle = ctx
-                    .start_activity(
+                    .execute_activity(
                         AccountTransferActivities::send_notification,
                         input.clone(),
                         ActivityOptions::start_to_close_timeout(Duration::from_secs(30)),
                     )
                     .await?;
                 info!("notification response {:?}", handle);
-                Self::update_progress_status(ctx, 100u64, 1u64, Some("finished".to_string())).await;
+                Self::update_progress_status(ctx, 100u64, 1u64, TransferState::Finished).await;
                 let results: TransferOutput = TransferOutput {
                     deposit_response: ctx.state(|s| s.deposit_response.charge_id.clone()),
                 };
@@ -209,7 +198,7 @@ macro_rules! account_transfer_scenario {
             #[signal(name = "approveTransfer")]
             pub fn approve_transfer_signal(&mut self, _ctx: &mut SyncWorkflowContext<Self>) {
                 info!("Approve Signal Received");
-                if self.transfer_state == "waiting" {
+                if self.transfer_state == TransferState::Waiting {
                     self.approved = true;
                 } else {
                     info!("Approval not applied. Transfer is not waiting for approval");
@@ -233,7 +222,7 @@ macro_rules! account_transfer_scenario {
                 if self.approved {
                     return Err("Validation Failed: Transfer already approved".into());
                 }
-                if self.transfer_state != "waiting" {
+                if self.transfer_state != TransferState::Waiting {
                     return Err("Validation Failed: Transfer doesn't require approval".into());
                 }
                 Ok(())
@@ -243,10 +232,7 @@ macro_rules! account_transfer_scenario {
                 let advanced = ctx.state(|s| s.workflow_type == Self::ADVANCED_VISIBILITY);
                 if advanced {
                     info!("Advanced visibility... On step: {step}");
-                    ctx.upsert_search_attributes([(
-                        Self::SEARCH_ATTRIBUTE.to_string(),
-                        step.as_json_payload().unwrap(),
-                    )]);
+                    ctx.upsert_search_attributes([Self::SEARCH_ATTRIBUTE.value_set(step)]);
                 }
             }
 
@@ -254,7 +240,7 @@ macro_rules! account_transfer_scenario {
             pub fn query_transfer_status(&self, _ctx: &WorkflowContextView) -> TransferStatus {
                 TransferStatus {
                     progress_percentage: self.progress.clone(),
-                    transfer_state: self.transfer_state.clone(),
+                    transfer_state: self.transfer_state.to_string(),
                     workflow_status: "".to_string(),
                     charge_result: self.deposit_response.clone(),
                     approval_time: self.approval_time,
@@ -266,7 +252,7 @@ macro_rules! account_transfer_scenario {
                 progress: u64,
                 sleep: u64,
             ) -> () {
-                Self::update_progress_status(ctx, progress, sleep, Some("running".to_string()))
+                Self::update_progress_status(ctx, progress, sleep, TransferState::Running)
                     .await;
             }
 
@@ -274,13 +260,11 @@ macro_rules! account_transfer_scenario {
                 ctx: &mut WorkflowContext<Self>,
                 progress: u64,
                 sleep: u64,
-                transfer_state: Option<String>,
+                transfer_state: TransferState,
             ) -> () {
                 ctx.state_mut(|s| {
                     s.progress = progress;
-                    if let Some(ts) = transfer_state {
-                        s.transfer_state = ts;
-                    }
+                    s.transfer_state = transfer_state;
                 });
 
                 if sleep > 0 {
@@ -297,6 +281,7 @@ macro_rules! account_transfer_scenario {
 
 // One registered workflow type per scenario the UI can start. All share the body above and
 // branch on their own `workflow_type` at runtime.
+
 account_transfer_scenario!(
     AccountTransferHumanInLoop,
     "AccountTransferWorkflowHumanInLoop"

@@ -6,7 +6,6 @@ use temporalio_sdk::{
     activities::{ActivityContext, ActivityError},
 };
 use tracing::info;
-use uuid::Uuid;
 
 use crate::shared::{API_DOWNTIME, ActivityInput, INVALID_ACCOUNT, TransferInput};
 
@@ -24,20 +23,12 @@ impl AccountTransferActivities {
     }
 
     #[activity]
-    pub async fn generate_idempotency_key(
-        _ctx: ActivityContext,
-    ) -> Result<String, ActivityError> {
-        let uuid = Uuid::new_v4().to_string();
-        Ok(uuid)
-    }
-
-    #[activity]
     pub async fn validate(
         _ctx: ActivityContext,
         input: TransferInput,
     ) -> Result<String, ActivityError> {
         info!("Validate Activity has started. Input {:?}", input);
-        Self::simulate_external_operation_ms(&1000).await;
+        Self::simulate_external_operation_ms(1000).await;
         Ok("SUCCESS".to_string())
     }
 
@@ -97,7 +88,7 @@ impl AccountTransferActivities {
         info!("Send notification activity started. input = {:?}", input);
 
         //simulte external API call
-        Self::simulate_external_operation_ms(&1000).await;
+        Self::simulate_external_operation_ms(1000).await;
 
         Ok("SUCCESS".to_string())
     }
@@ -108,20 +99,20 @@ impl AccountTransferActivities {
         _message: String,
     ) -> Result<bool, ActivityError> {
         //simulate external API call
-        Self::simulate_external_operation_ms(&1000).await;
+        Self::simulate_external_operation_ms(1000).await;
         Ok(true)
     }
 
-    async fn simulate_external_operation_ms(ms: &u64) -> () {
-        tokio::time::sleep(Duration::from_millis(*ms)).await;
+    async fn simulate_external_operation_ms(ms: u64) -> () {
+        tokio::time::sleep(Duration::from_millis(ms)).await;
     }
 
     async fn simulate_external_operation(
         ms: u64,
-        workflow_type: &String,
+        workflow_type: &str,
         attempt: &u64,
     ) -> Result<String, ActivityError> {
-        Self::simulate_external_operation_ms(&(ms / attempt)).await;
+        Self::simulate_external_operation_ms(ms / attempt).await;
         if *attempt < 5 {
             return Ok(workflow_type.to_string());
         }

@@ -1,3 +1,5 @@
+use std::fmt;
+
 pub const TASK_QUEUE: &str = "MoneyTransfer";
 pub const API_DOWNTIME: &str = "AccountTransferWorkflowAPIDowntime";
 pub const INVALID_ACCOUNT: &str = "AccountTransferWorkflowInvalidAccount";
@@ -37,4 +39,26 @@ pub struct TransferStatus {
     pub workflow_status: String,
     pub charge_result: DepositResponse,
     pub approval_time: u64,
+}
+
+#[derive(Clone, Default, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum TransferState {
+    #[default]
+    NoneType,
+    Waiting,
+    Running,
+    Finished,
+}
+
+// Implement the Display trait
+impl fmt::Display for TransferState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let text = match self {
+            TransferState::NoneType => "",
+            TransferState::Waiting => "waiting",
+            TransferState::Running => "running",
+            TransferState::Finished => "finished",
+        };
+        write!(f, "{}", text)
+    }
 }
