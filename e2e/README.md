@@ -12,7 +12,7 @@ Run the complete test suite (installs dependencies and runs tests):
 Available flags:
 - `--headed` - Run tests with browser visible
 - `--verbose` - Enable verbose output
-- `--only <worker>` - Run tests for specific worker only (go, ruby, dotnet, java, python, typescript)
+- `--only <worker>` - Run tests for specific worker only (go, ruby, dotnet, java, python, typescript, rust)
 
 Examples:
 ```bash
