@@ -6,4 +6,4 @@ pnpm 9.15.9
 poetry 1.8.5
 python 3.12.12
 ruby 3.2.9
-rustc 1.95.0
+rust 1.95.0
