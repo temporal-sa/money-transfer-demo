@@ -207,6 +207,7 @@ Install and configure `asdf` per the [Getting Started Guide](https://asdf-vm.com
 ## 2. Install Plugins
 
 Add [plugins](https://asdf-vm.com/manage/plugins.html) for the tools in [.tool-versions](.tool-versions)
+
 ```sh
 asdf plugin add dotnet-core
 asdf plugin add golang
@@ -216,6 +217,14 @@ asdf plugin add pnpm
 asdf plugin add poetry
 asdf plugin add python
 asdf plugin add ruby
+```
+
+> [!NOTE]
+> Rust is deliberately excluded from the list above. If you already manage Rust with [rustup](https://rustup.rs),
+> skip this step — asdf would install a second, standalone Rust toolchain whose shims compete with rustup's on
+> your `PATH`. If you do not use rustup and want `asdf` to manage Rust for you, register the plugin:
+
+```sh
 asdf plugin add rust
 ```
 
