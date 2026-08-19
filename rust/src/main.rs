@@ -21,8 +21,7 @@ use temporalio_common::data_converters::{
     DataConverter, DefaultFailureConverter, PayloadConverter,
 };
 use temporalio_common::telemetry::TelemetryOptions;
-use temporalio_sdk::{Worker, WorkerOptions};
-use temporalio_sdk_core::{CoreRuntime, RuntimeOptions};
+use temporalio_sdk::{Runtime, Worker, WorkerOptions, runtime::RuntimeOptions};
 use tracing::info;
 use tracing_subscriber::EnvFilter;
 use url::Url;
@@ -33,7 +32,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_env_filter(EnvFilter::from_default_env().add_directive(tracing::Level::INFO.into()))
         .init();
 
-    let runtime = CoreRuntime::new_assume_tokio(
+    let runtime = Runtime::new_assume_tokio(
         RuntimeOptions::builder()
             .telemetry_options(TelemetryOptions::builder().build())
             .build()?,
@@ -110,22 +109,20 @@ fn build_connection_options()
     let (tls_options, api_key_opt) = if !api_key.is_empty() {
         info!("Using Cloud API key auth (address {address}, namespace {namespace})");
         (
-            Some(TlsOptions {
-                domain: server_name,
-                ..Default::default()
-            }),
+            Some(TlsOptions::builder().maybe_domain(server_name).build()),
             Some(api_key),
         )
     } else if !cert_path.is_empty() && !key_path.is_empty() {
         info!("Using mTLS auth");
-        let tls = TlsOptions {
-            domain: server_name,
-            client_tls_options: Some(ClientTlsOptions {
-                client_cert: std::fs::read(&cert_path)?,
-                client_private_key: std::fs::read(&key_path)?,
-            }),
-            ..Default::default()
-        };
+        let tls = TlsOptions::builder()
+            .maybe_domain(server_name)
+            .client_tls_options(
+                ClientTlsOptions::builder()
+                    .client_cert(std::fs::read(&cert_path)?)
+                    .client_private_key(std::fs::read(&key_path)?)
+                    .build(),
+            )
+            .build();
         (Some(tls), None)
     } else {
         (None, None)
@@ -141,10 +138,12 @@ fn build_connection_options()
         // Send HTTP/2 keep-alive pings so the connection stays warm during idle waits
         // (e.g. human-in-the-loop workflows parked on an approval) and isn't reaped by the
         // server or a Cloud load balancer.
-        .keep_alive(Some(ClientKeepAliveOptions {
-            interval: Duration::from_secs(10),
-            timeout: Duration::from_secs(10),
-        }))
+        .keep_alive(Some(
+            ClientKeepAliveOptions::builder()
+                .interval(Duration::from_secs(10))
+                .timeout(Duration::from_secs(10))
+                .build(),
+        ))
         .build();
 
     Ok((conn_opts, namespace, is_cloud))

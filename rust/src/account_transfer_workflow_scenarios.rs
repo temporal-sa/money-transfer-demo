@@ -259,10 +259,11 @@ async fn update_progress_status<W: HasScenarioState>(
     });
 
     if sleep > 0 {
-        ctx.timer(TimerOptions {
-            duration: Duration::from_secs(sleep),
-            summary: Some("update progress timer".into()),
-        })
+        ctx.timer(
+            TimerOptions::builder(Duration::from_secs(sleep))
+                .summary("update progress timer".into())
+                .build(),
+        )
         .await;
     }
 }
