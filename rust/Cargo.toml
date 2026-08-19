@@ -10,7 +10,6 @@ path = "src/main.rs"
 [dependencies]
 temporalio-sdk = "0.7.0"
 temporalio-macros = "0.7.0"
-temporalio-sdk-core = "0.7.0"
 temporalio-client = "0.7.0"
 temporalio-common = "0.7.0"
 anyhow = "1.0.102"
