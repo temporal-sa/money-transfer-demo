@@ -22,6 +22,14 @@ import java.util.Collections;
 
 public class TemporalClient {
 
+    /*
+        Service stubs own a gRPC connection (background threads and sockets), so they are created
+        once and shared for the lifetime of the process rather than per request.
+     */
+    private static WorkflowServiceStubs serviceStubs;
+    private static WorkflowServiceStubs serviceStubsWithHeaders;
+    private static WorkflowClient workflowClient;
+
     public static WorkflowServiceStubsOptions.Builder getWorkflowServiceStubsOptionsBuilder() throws FileNotFoundException, SSLException {
         WorkflowServiceStubsOptions.Builder workflowServiceStubsOptionsBuilder =
                 WorkflowServiceStubsOptions.newBuilder();
@@ -48,24 +56,28 @@ public class TemporalClient {
         return workflowServiceStubsOptionsBuilder;
     }
 
-    public static WorkflowServiceStubs getWorkflowServiceStubs() throws FileNotFoundException, SSLException {
-        WorkflowServiceStubs service = null;
-
-        if (!ServerInfo.getAddress().equals("localhost:7233")) {
-            // if not local server, then use the workflowServiceStubsOptionsBuilder
-            service = WorkflowServiceStubs.newServiceStubs(getWorkflowServiceStubsOptionsBuilder().build());
-        } else {
-            service = WorkflowServiceStubs.newLocalServiceStubs();
+    public static synchronized WorkflowServiceStubs getWorkflowServiceStubs() throws FileNotFoundException, SSLException {
+        if (serviceStubs == null) {
+            if (!ServerInfo.getAddress().equals("localhost:7233")) {
+                // if not local server, then use the workflowServiceStubsOptionsBuilder
+                serviceStubs = WorkflowServiceStubs.newServiceStubs(getWorkflowServiceStubsOptionsBuilder().build());
+            } else {
+                serviceStubs = WorkflowServiceStubs.newLocalServiceStubs();
+            }
         }
 
-        return service;
+        return serviceStubs;
     }
 
     /*
         The Temporal client will insert headers required for API keys. If the service client is used, API key
         headers have to be manually added.
      */
-    public static WorkflowServiceStubs getWorkflowServiceStubsWithHeaders() throws FileNotFoundException, SSLException {
+    public static synchronized WorkflowServiceStubs getWorkflowServiceStubsWithHeaders() throws FileNotFoundException, SSLException {
+        if (serviceStubsWithHeaders != null) {
+            return serviceStubsWithHeaders;
+        }
+
         WorkflowServiceStubsOptions.Builder workflowServiceStubsOptionsBuilder = getWorkflowServiceStubsOptionsBuilder();
 
         if (!ServerInfo.getApiKey().isEmpty()) {
@@ -81,19 +93,21 @@ public class TemporalClient {
                             });
         }
 
-        WorkflowServiceStubs service = null;
-
         if (!ServerInfo.getAddress().equals("localhost:7233")) {
             // if not local server, then use the workflowServiceStubsOptionsBuilder
-            service = WorkflowServiceStubs.newServiceStubs(workflowServiceStubsOptionsBuilder.build());
+            serviceStubsWithHeaders = WorkflowServiceStubs.newServiceStubs(workflowServiceStubsOptionsBuilder.build());
         } else {
-            service = WorkflowServiceStubs.newLocalServiceStubs();
+            serviceStubsWithHeaders = WorkflowServiceStubs.newLocalServiceStubs();
         }
 
-        return service;
+        return serviceStubsWithHeaders;
     }
 
-    public static WorkflowClient get() throws FileNotFoundException, SSLException {
+    public static synchronized WorkflowClient get() throws FileNotFoundException, SSLException {
+        if (workflowClient != null) {
+            return workflowClient;
+        }
+
         WorkflowServiceStubs service = getWorkflowServiceStubs();
         WorkflowClientOptions.Builder builder = WorkflowClientOptions.newBuilder();
 
@@ -112,8 +126,8 @@ public class TemporalClient {
         WorkflowClientOptions clientOptions = builder.setNamespace(ServerInfo.getNamespace()).build();
 
         // client that can be used to start and signal workflows
-        WorkflowClient client = WorkflowClient.newInstance(service, clientOptions);
-        return client;
+        workflowClient = WorkflowClient.newInstance(service, clientOptions);
+        return workflowClient;
     }
 
     public static ScheduleClient getScheduleClient() throws FileNotFoundException, SSLException {
