@@ -216,6 +216,7 @@ asdf plugin add pnpm
 asdf plugin add poetry
 asdf plugin add python
 asdf plugin add ruby
+asdf plugin add rust
 ```
 
 > [!NOTE]
