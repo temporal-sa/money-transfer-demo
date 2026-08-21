@@ -25,7 +25,6 @@ export async function getConnectionOptions(): Promise<ConnectionOptions> {
   //First check for API Key
   if (process.env.TEMPORAL_API_KEY) {
     console.info('🤖: Connecting to Temporal Cloud using API key ⛅');
-    console.info('api key: ', getenv('TEMPORAL_API_KEY'))
     options.apiKey = getenv('TEMPORAL_API_KEY');
     options.tls = true; // Set tls to true when using API keys for Temporal Cloud
   }
