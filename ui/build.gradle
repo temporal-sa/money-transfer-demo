@@ -11,7 +11,7 @@ repositories {
 }
 
 ext {
-    javaSDKVersion = '1.28.2'
+    javaSDKVersion = '1.35.0'
 }
 
 dependencies {
@@ -19,8 +19,8 @@ dependencies {
     implementation "io.temporal:temporal-sdk:$javaSDKVersion"
     implementation 'ch.qos.logback:logback-classic:1.5.7'
 
-    compileOnly 'org.projectlombok:lombok:1.18.34'
-    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    compileOnly 'org.projectlombok:lombok:1.18.48'
+    annotationProcessor 'org.projectlombok:lombok:1.18.48'
 }
 
 test {
