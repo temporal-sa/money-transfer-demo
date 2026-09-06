@@ -170,7 +170,7 @@ async fn run_scenario<W: HasScenarioState>(
         // BUG: comment out the next two lines and uncomment the info! statement line.
         error!("There's a bug!");
         panic!("Simulated bug - fix me!");
-        // info!("Bug is fixed!");
+        //info!("Bug is fixed!");
     }
 
     // Deposit
