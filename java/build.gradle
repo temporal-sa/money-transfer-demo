@@ -19,16 +19,18 @@ dependencies {
     implementation "io.temporal:temporal-sdk:$javaSDKVersion"
     implementation 'ch.qos.logback:logback-classic:1.5.7'
 
-    compileOnly 'org.projectlombok:lombok:1.18.34'
-    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+    compileOnly 'org.projectlombok:lombok:1.18.48'
+    annotationProcessor 'org.projectlombok:lombok:1.18.48'
 
     testImplementation "io.temporal:temporal-testing:$javaSDKVersion"
     testImplementation "junit:junit:4.13.2"
     testImplementation "org.mockito:mockito-core:5.3.1"
     testImplementation(platform("org.junit:junit-bom:5.9.3"))
+    testRuntimeOnly(platform("org.junit:junit-bom:5.9.3"))
     testImplementation "org.junit.jupiter:junit-jupiter-api"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 test {
