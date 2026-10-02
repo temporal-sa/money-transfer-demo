@@ -147,6 +147,6 @@ public class TemporalClient {
         System.out.println("<<<<SERVER INFO>>>>:\n " + ServerInfo.getServerInfo());
         ScheduleClientOptions clientOptions = builder.setNamespace(ServerInfo.getNamespace()).build();
 
-        return ScheduleClient.newInstance(getWorkflowServiceStubsWithHeaders(), clientOptions);
+        return ScheduleClient.newInstance(getWorkflowServiceStubs(), clientOptions);
     }
 }
