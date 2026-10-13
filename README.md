@@ -4,7 +4,7 @@ Demonstrates a simple Money Transfer in Temporal implemented in different langua
 The workflow is designed so that the "Happy Path" is one workflow and all other scenarios are implemented using a Dyanmic Workflow.
 
 Scenarios currently implemented include
-* Happy Path                - everything works as intended
+* Happy Path                - Simple code, written for the Happy Path, yet fully durable and crash-proof
 * Advanced Visibility       - updates a Search Attribute (Step) as it progesses through the workflow
 * Require Human in the Loop - Shows how to use a signal with timeouts if not approved in time
 * API Downtime              - Demonstrates an unreliable API (recovers after the 5th attempt)
@@ -263,5 +263,3 @@ output above, e.g.
 > go version
 go version go1.23.12 darwin/arm64
 ```
-
-

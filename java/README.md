@@ -39,7 +39,7 @@ A dropdown menu simulates the following scenarios
 
 #### Happy Path
 
-- The transfer will run to completion
+- The transfer will run to completion, and is crash-proof
 
 #### Advanced Visibility
 
