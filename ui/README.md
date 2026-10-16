@@ -124,23 +124,17 @@ running in Temporal Cloud.
 
 ## Where is the UI code?
 
-_The organization of UI code is 'less than perfect'. It's a todo list item for the future to refactor it._
+The page is a [SvelteKit](https://kit.svelte.dev/) app in [`web/`](web). The Java server serves its static build
+from `src/main/resources/svelte_ui`, which is committed so the UI runs without Node.
 
-* The UI code is based on the [SvelteKit](https://kit.svelte.dev/) framework.
-* It lives in
-  the [Typescript version of the Money Transfer example](https://github.com/steveandroulakis/temporal-money-transfer)
-  under `./ui`.
-* A compiled version was built and copied to this Java example repository
-* To modify and test the UI:
-    * Deploy the Typescript version of the Money Transfer example
-    * Modify the UI code in the Typescript version
-    * Run and test that version, it will build the UI
-    * If the UI works in the Typescript version, it will work in the Java one
-* Deploy a new version of the UI into the Java example
-    * Remove the existing UI directory: `temporal-money-transfer-java/core/src/main/resources/svelte_ui`
-    * Copy the UI from the Typescript example to the Java example:
+To change the UI, edit `web/src/routes/+page.svelte`, then rebuild and commit the output with your change:
 
 ```bash
-cp -r /path/to/temporal-money-transfer/server/build/* \
-      /path/to/temporal-money-transfer-java/core/src/main/resources/svelte_ui/
+cd web
+npm ci
+npm run build   # writes ../src/main/resources/svelte_ui
 ```
+
+The source was recovered from
+[temporal-money-transfer-typescript](https://github.com/temporal-sa/temporal-money-transfer-typescript), with the
+Advanced Visibility scenario added back to match the bundle that shipped here.

@@ -1,160 +1,101 @@
 <!DOCTYPE html>
 <style>
-    .progress-bar {
-      background: lightgray;
-      width: 100%;
-      height: 30px;
-      overflow: hidden;
-    }
-    .progress {
-      background: linear-gradient(-45deg, #dfe0e1, #dcddde 25%, #b7b3b9 25%, #c1bfc2 50%, #b7b8b9 50%, #797b7c 75%, #5f5e60 75%, #5e5d5e);
-      background-size: 200% 200%;
-      animation: progress-bar-stripes 3s linear infinite;
-      height: 100%;
-      transition: width 0.1s;
-    }
-    @keyframes progress-bar-stripes {
-      0% { background-position: 0 -1rem; }
-      100% { background-position: 0 0; }
-    }
-</style>
+	.progress-bar {
+	  background: lightgray;
+	  width: 100%;
+	  height: 30px;
+	  overflow: hidden;
+	}
+	.progress {
+	  background: linear-gradient(-45deg, #dfe0e1, #dcddde 25%, #b7b3b9 25%, #c1bfc2 50%, #b7b8b9 50%, #797b7c 75%, #5f5e60 75%, #5e5d5e);
+	  background-size: 200% 200%;
+	  animation: progress-bar-stripes 3s linear infinite;
+	  height: 100%;
+	  transition: width 0.1s;
+	}
+	@keyframes progress-bar-stripes {
+	  0% { background-position: 0 -1rem; }
+	  100% { background-position: 0 0; }
+	}
+  </style>
 <html lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <link href="./favicon.png" rel="icon"/>
-    <meta content="width=device-width, initial-scale=1" name="viewport">
-    <meta content="" http-equiv="content-security-policy">
-    <link href="./_app/immutable/assets/0.f26e6c8d.css" rel="stylesheet">
-    <link href="./_app/immutable/assets/2.c9fe43b4.css" rel="stylesheet">
-    <link href="./_app/immutable/entry/start.4bde84a7.js" rel="modulepreload">
-    <link href="./_app/immutable/chunks/index.6cb358ec.js" rel="modulepreload">
-    <link href="./_app/immutable/chunks/singletons.12c06c3d.js" rel="modulepreload">
-    <link href="./_app/immutable/entry/app.65a2436b.js" rel="modulepreload">
-    <link href="./_app/immutable/nodes/0.c1a8ff04.js" rel="modulepreload">
-    <link href="./_app/immutable/nodes/2.7ae12475.js" rel="modulepreload">
-    <link href="./_app/immutable/chunks/stores.38627ba6.js" rel="modulepreload">
-    <title>Money Transfer App</title><!-- HEAD_svelte-axg6d6_START -->
-    <link href="/_app/immutable/assets/favicon.54bd878e.ico" rel="icon">
-    <link href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlRlbXBvcmFsIFdlYiBVSSIsCiAgInNob3J0X25hbWUiOiAiVGVtcG9yYWwiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICIuL2FuZHJvaWQtY2hyb21lLTE5MngxOTIucG5nIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9LAogICAgewogICAgICAic3JjIjogIi4vYW5kcm9pZC1jaHJvbWUtNTEyeDUxMi5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0KICBdLAogICJ0aGVtZV9jb2xvciI6ICIjZmZmZmZmIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIgp9Cg=="
-          rel="manifest">
-    <link href="/_app/immutable/assets/apple-touch-icon.8685d9e4.png" rel="apple-touch-icon">
-    <meta content="Money Transfer App" property="og:title">
-    <meta content="website" property="og:type">
-    <meta content="http://sveltekit-prerender/" property="og:url">
-    <meta content="/_app/immutable/assets/banner.1e0667a3.png" property="og:image"><!-- HEAD_svelte-axg6d6_END -->
-
-</head>
-<body data-sveltekit-preload-data="hover">
-<div style="display: contents">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="./favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="content-security-policy" content="">
+		<link href="./_app/immutable/assets/0.cf0b3f4a.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/2.9c18cbc3.css" rel="stylesheet">
+		<link rel="modulepreload" href="./_app/immutable/entry/start.be00a2cf.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/index.95b1fff7.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/singletons.3ef5c087.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/app.66d5cd7a.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/0.5091febd.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/2.05e2443d.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/stores.c08398d0.js"><title>Money Transfer App</title><!-- HEAD_svelte-axg6d6_START --><link rel="icon" href="/_app/immutable/assets/favicon.54bd878e.ico"><link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlRlbXBvcmFsIFdlYiBVSSIsCiAgInNob3J0X25hbWUiOiAiVGVtcG9yYWwiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICIuL2FuZHJvaWQtY2hyb21lLTE5MngxOTIucG5nIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9LAogICAgewogICAgICAic3JjIjogIi4vYW5kcm9pZC1jaHJvbWUtNTEyeDUxMi5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0KICBdLAogICJ0aGVtZV9jb2xvciI6ICIjZmZmZmZmIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIgp9Cg=="><link rel="apple-touch-icon" href="/_app/immutable/assets/apple-touch-icon.8685d9e4.png"><meta property="og:title" content="Money Transfer App"><meta property="og:type" content="website"><meta property="og:url" content="http://sveltekit-prerender/"><meta property="og:image" content="/_app/immutable/assets/banner.1e0667a3.png"><!-- HEAD_svelte-axg6d6_END -->
+	
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
 
 
-    <div class="flex w-screen flex-row">
-        <div class="z-10 -mt-4 flex w-full flex-col gap-4 px-10 pb-10 pt-8">
-            <section class="flex flex-col gap-8 items-center">
-                <div class="my-12 flex flex-col items-center justify-start undefined"><img
-                        alt="Temporal Logo" height="200px"
-                        src="/_app/immutable/assets/Temporal_Logo_Animation.ac2f7996.gif" style="margin-top: -40px;"
-                        width="200px">
-                    <h2 class="text-xl font-medium" style="margin-top: -40px;"></h2></div>
-                <h2 class="text-2xl flex items-center gap-1">Transfer Money</h2>
-                <div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md"><label
-                        class="block text-sm font-medium text-gray-700"
-                        for="from-account">From
-                    Account</label>
-                    <select class="mt-1 block w-full text-2xl" id="from-account">
-                        <option value="Checking">Checking</option>
-                        <option value="Savings">Savings</option>
-                    </select></div>
-                <div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md"><label
-                        class="block text-sm font-medium text-gray-700"
-                        for="to-account">To
-                    Account</label>
-                    <select class="mt-1 block w-full text-2xl" id="to-account">
-                        <option value="Justine Morris">Justine Morris</option>
-                        <option value="Raul Ruidíaz">Raul Ruidíaz</option>
-                        <option value="Ian Wu">Ian Wu</option>
-                        <option value="Emma Stockton">Emma Stockton</option>
-                    </select></div>
-                <div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md"><label
-                        class="block text-sm font-medium text-gray-700"
-                        for="amount">Amount
-                    (In USD)</label>
-                    <input class="mt-1 block w-full text-4xl" id="amount" type="number" value="1"></div>
-                <div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md"><label
-                        class="block text-sm font-medium text-gray-400"
-                        for="simulate">Debug:
-                    Simulate</label>
-                    <select class="mt-1 block w-full text-2xl" id="simulate">
-                        <option value="HAPPY_PATH">Normal "Happy Path" (Durable Execution)</option>
-                        <option value="ADVANCED_VISIBILITY">Advanced Visibility</option>
-                        <option value="HUMAN_IN_LOOP">Require Human-In-Loop Approval</option>
-                        <option value="API_DOWNTIME">API Downtime (recover on 5th attempt)</option>
-                        <option value="BUG_IN_WORKFLOW">Bug in Workflow (recoverable failure)</option>
-                        <option value="INVALID_ACCOUNT">Invalid Account (unrecoverable failure)</option>
-                    </select></div>
-                <div><input id="schedule-checkbox"
-                            style="transform: scale(1.6); vertical-align: middle; margin-right:6px"
-                            type="checkbox">
-                    <label for="schedule-checkbox" style="font-size: 1.0em;">Schedule a recurring transfer</label></div>
+<div class="flex w-screen flex-row"><div class="z-10 -mt-4 flex w-full flex-col gap-4 px-10 pb-10 pt-8">
+<section class="flex flex-col gap-8 items-center"><div class="my-12 flex flex-col items-center justify-start undefined"><img src="/_app/immutable/assets/Temporal_Logo_Animation.ac2f7996.gif" style="margin-top: -40px;" alt="Temporal Logo" width="200px" height="200px">
+  <h2 class="text-xl font-medium" style="margin-top: -40px;"></h2></div>
+	<h2 class="text-2xl flex items-center gap-1">Transfer Money</h2>
+	<div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md"><label for="from-account" class="block text-sm font-medium text-gray-700">From Account</label>
+			<select id="from-account" class="mt-1 block w-full text-2xl"><option value="Checking">Checking</option><option value="Savings">Savings</option></select></div>
+		<div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md"><label for="to-account" class="block text-sm font-medium text-gray-700">To Account</label>
+			<select id="to-account" class="mt-1 block w-full text-2xl"><option value="Justine Morris">Justine Morris</option><option value="Raul Ruidíaz">Raul Ruidíaz</option><option value="Ian Wu">Ian Wu</option><option value="Emma Stockton">Emma Stockton</option></select></div>
+		<div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md"><label for="amount" class="block text-sm font-medium text-gray-700">Amount (In USD)</label>
+			<input id="amount" type="number" class="mt-1 block w-full text-4xl" value="1"></div>
+		<div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md"><label for="simulate" class="block text-sm font-medium text-gray-400">Debug: Simulate</label>
+			<select id="simulate" class="mt-1 block w-full text-2xl"><option value="HAPPY_PATH">Normal "Happy Path" Execution</option><option value="ADVANCED_VISIBILITY">Advanced Visibility</option><option value="HUMAN_IN_LOOP">Require Human-In-Loop Approval</option><option value="API_DOWNTIME">API Downtime (recover on 5th attempt)</option><option value="BUG_IN_WORKFLOW">Bug in Workflow (recoverable failure)</option><option value="INVALID_ACCOUNT">Invalid Account (unrecoverable failure)</option></select></div>
+		<div><input type="checkbox" id="schedule-checkbox" style="transform: scale(1.6); vertical-align: middle; margin-right:6px">
+			<label style="font-size: 1.0em;" for="schedule-checkbox">Schedule a recurring transfer</label></div>
+		
+		<div class=""><button class="button primary undefined svelte-aw3l84" type="button" >
+    Transfer
+    </button></div>
+	<br>
+	
+	<h2>Transfer History (1h)</h2>
+	<table class="w-full md:w-1/2 leading-normal mx-auto"><thead><tr><th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Workflow ID</th>
+				<th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th></tr></thead>
+		<tbody></tbody></table>
 
-                <div class="">
-                    <button class="button primary undefined s-FenSIQCdFdFd" type="button">
-                        Transfer
-                    </button>
-                </div>
-                <br>
+	<h6><a href="https://github.com/steveandroulakis/temporal-money-transfer" target="_blank"><img src="/_app/immutable/assets/github-mark.7a0dd11e.svg" alt="Source Code" class="w-8 h-auto"></a></h6>
 
-                <h2>Transfer History (1h)</h2>
-                <table class="w-full md:w-1/2 leading-normal mx-auto">
-                    <thead>
-                    <tr>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Workflow ID
-                        </th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Status
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-
-                <h6><a href="https://github.com/temporal-sa/money-transfer-demo" target="_blank"><img
-                        alt="Source Code" class="w-8 h-auto" src="/_app/immutable/assets/github-mark.7a0dd11e.svg"></a>
-                </h6>
-
-                <div class="px-6 py-3 bg-gray-100 text-center"><p class="text-gray-400 text-sm">Temporal Server</p>
-                    <p class="text-gray-400 text-sm">undefined</p>
-                    <p class="text-gray-400 text-sm">Namespace: undefined</p></div>
-            </section>
-        </div>
-    </div>
+	<div class="px-6 py-3 bg-gray-100 text-center"><p class="text-gray-400 text-sm">Temporal Server</p>
+		<p class="text-gray-400 text-sm">undefined</p>
+		<p class="text-gray-400 text-sm">Namespace: undefined</p></div></section></div></div>
 
 
-    <script>
-        {
-            __sveltekit_gwo2qf = {
-                base: new URL(".", location).pathname.slice(0, -1),
-                env: {}
-            };
+			
+			<script>
+				{
+					__sveltekit_1xm3r12 = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						env: {}
+					};
 
-            const element = document.currentScript.parentElement;
+					const element = document.currentScript.parentElement;
 
-            const data = [null,null];
+					const data = [null,null];
 
-            Promise.all([
-                import("./_app/immutable/entry/start.4bde84a7.js"),
-                import("./_app/immutable/entry/app.65a2436b.js")
-            ]).then(([kit, app]) => {
-                kit.start(app, element, {
-                    node_ids: [0, 2],
-                    data,
-                    form: null,
-                    error: null
-                });
-            });
-        }
-    </script>
-</div>
-</body>
+					Promise.all([
+						import("./_app/immutable/entry/start.be00a2cf.js"),
+						import("./_app/immutable/entry/app.66d5cd7a.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 2],
+							data,
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
 </html>
