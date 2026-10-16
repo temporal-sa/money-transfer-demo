@@ -37,7 +37,7 @@ Then navigate to `http://localhost:7070/`
 
 ## Demo various failures and recoveries
 
-A dropdown menu simulates the following scenarios
+Radio buttons under "Debug: Simulate" select one of the following scenarios
 
 #### Happy Path
 

@@ -15,7 +15,7 @@
 	}
 
 	let fromAccount = "Checking";
-	let toAccount = "";
+	let toAccount = "Justine Morris";
 	let amount = 1;
 	let transferSubmitted = false;
 	let scheduleTransferSubmitted = false;
@@ -256,66 +256,49 @@
 	<Loading title="" on:click={navigateToRoot} />
 	<h2 class="text-2xl flex items-center gap-1">Transfer Money</h2>
 	{#if !transferSubmitted}
-		<div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md">
-			<label
-				for="from-account"
-				class="block text-sm font-medium text-gray-700"
-				>From Account</label
-			>
-			<select
-				id="from-account"
-				bind:value={fromAccount}
-				class="mt-1 block w-full text-2xl"
-			>
-				{#each fromAccounts as account (account)}
-					<option>{account}</option>
-				{/each}
-			</select>
-		</div>
-		<div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md">
-			<label
-				for="to-account"
-				class="block text-sm font-medium text-gray-700"
-				>To Account</label
-			>
-			<select
-				id="to-account"
-				bind:value={toAccount}
-				class="mt-1 block w-full text-2xl"
-			>
-				{#each toAccounts as account (account)}
-					<option>{account}</option>
-				{/each}
-			</select>
-		</div>
-		<div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md">
-			<label for="amount" class="block text-sm font-medium text-gray-700"
-				>Amount (In USD)</label
-			>
-			<input
-				id="amount"
-				type="number"
-				bind:value={amount}
-				class="mt-1 block w-full text-4xl"
-			/>
-		</div>
-		<div class="sm:w-1/2 w-full border border-gray-200 p-4 rounded-md">
-			<label
-				for="simulate"
-				class="block text-sm font-medium text-gray-400"
-				>Debug: Simulate</label
-			>
-			<select
-				id="simulate"
-				bind:value={scenario}
-				class="mt-1 block w-full text-2xl"
-			>
-				{#each scenarios as scenarioObj (scenarioObj.value)}
-					<option value={scenarioObj.value}
-						>{scenarioObj.label}</option
+		<div class="grid w-full max-w-5xl grid-cols-1 md:grid-cols-2 gap-6 items-start">
+			<div class="flex flex-col gap-6">
+				<fieldset class="w-full border border-gray-200 p-4 rounded-md">
+					<legend class="float-left w-full mb-2 text-sm font-medium text-gray-700">From Account</legend>
+					{#each fromAccounts as account (account)}
+						<label class="clear-left flex items-center gap-3 py-1 text-lg cursor-pointer">
+							<input type="radio" name="from-account" value={account} bind:group={fromAccount} class="h-4 w-4 accent-gray-900" />
+							{account}
+						</label>
+					{/each}
+				</fieldset>
+				<fieldset class="w-full border border-gray-200 p-4 rounded-md">
+					<legend class="float-left w-full mb-2 text-sm font-medium text-gray-700">To Account</legend>
+					{#each toAccounts as account (account)}
+						<label class="clear-left flex items-center gap-3 py-1 text-lg cursor-pointer">
+							<input type="radio" name="to-account" value={account} bind:group={toAccount} class="h-4 w-4 accent-gray-900" />
+							{account}
+						</label>
+					{/each}
+				</fieldset>
+			</div>
+			<div class="flex flex-col gap-6">
+				<div class="w-full border border-gray-200 p-4 rounded-md">
+					<label for="amount" class="block text-sm font-medium text-gray-700"
+						>Amount (In USD)</label
 					>
-				{/each}
-			</select>
+					<input
+						id="amount"
+						type="number"
+						bind:value={amount}
+						class="mt-1 block w-full text-3xl"
+					/>
+				</div>
+				<fieldset class="w-full border border-gray-200 p-4 rounded-md">
+					<legend class="float-left w-full mb-2 text-sm font-medium text-gray-400">Debug: Simulate</legend>
+					{#each scenarios as scenarioObj (scenarioObj.value)}
+						<label class="clear-left flex items-center gap-3 py-1 text-lg cursor-pointer">
+							<input type="radio" name="simulate" value={scenarioObj.value} bind:group={scenario} class="h-4 w-4 accent-gray-900" />
+							{scenarioObj.label}
+						</label>
+					{/each}
+				</fieldset>
+			</div>
 		</div>
 		<div>
 			<input
