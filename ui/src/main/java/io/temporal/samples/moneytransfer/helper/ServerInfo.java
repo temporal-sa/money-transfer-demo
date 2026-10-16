@@ -31,6 +31,11 @@ public class ServerInfo {
       return getEnv("TEMPORAL_API_KEY", "");
     }
 
+    // Opt-in for a local server on a non-default address, e.g. a dev server on another port
+    public static boolean getAllowPlaintext() {
+        return getEnv("TEMPORAL_ALLOW_PLAINTEXT", "false").equalsIgnoreCase("true");
+    }
+
     public static int getWorkflowSleepDuration() {
         String workflowSleepDurationString = getEnv("TEMPORAL_MONEYTRANSFER_SLEEP", "0");
         int workflowSleepDuration = 0;

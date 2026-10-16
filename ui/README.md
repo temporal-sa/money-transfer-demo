@@ -19,6 +19,14 @@ TEMPORAL_CERT_PATH="/path/to/file.pem"
 TEMPORAL_KEY_PATH="/path/to/file.key"
 ````
 
+Without credentials, the UI connects only to `localhost:7233` or `temporal:7233`. To use a local server on another
+address, such as a dev server on a different port, opt in explicitly:
+
+```bash
+export TEMPORAL_ADDRESS=localhost:7403
+export TEMPORAL_ALLOW_PLAINTEXT=true
+```
+
 (optional) set a task queue name
 
 ```bash
