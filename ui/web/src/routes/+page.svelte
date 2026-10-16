@@ -27,6 +27,12 @@
 	let chargeId = "";
 	let failed = false;
 	let waiting = false;
+	$: submittedView = transferSubmitted && !scheduleTransferSubmitted;
+	// "API Downtime (recover on 5th attempt)" -> "API Downtime", for the history table
+	const scenarioName = (value) =>
+		(scenarios.find((s) => s.value === value)?.label ?? "").replace(/ \(.*\)$/, "");
+	$: scenarioLabel = scenarios.find((s) => s.value === scenario)?.label;
+	$: transferUrl = serverinfo.url && transferId ? `${serverinfo.url}/${transferId}` : "";
 	let scheduleTransfer = false; // New state for the checkbox
 	let scheduleInterval = "15"; // Time interval in seconds
 	let scheduleCount = "3"; // Number of times to run the transfer
@@ -340,9 +346,11 @@
 		<h3>
 			{transferId}
 		</h3>
-	{:else}
+	{/if}
+	<div class="flex w-full flex-col items-center gap-8">
+	{#if submittedView}
 		<div
-			class="sm:w-1/2 w-full mx-auto mt-10 bg-white shadow-lg rounded-lg overflow-hidden"
+			class="w-full md:w-1/2 bg-white shadow-lg rounded-lg overflow-hidden"
 		>
 			<div class="py-4 px-6">
 				<h2 class="text-2xl font-bold text-gray-700">Submitted</h2>
@@ -354,6 +362,9 @@
 				</p>
 				<p class="py-2 text-gray-700 font-semibold">
 					Amount: <span class="font-normal">${amount}</span>
+				</p>
+				<p class="py-2 text-gray-700 font-semibold">
+					Scenario: <span class="font-normal">{scenarioLabel}</span>
 				</p>
 			</div>
 			<div class="py-4 px-6">
@@ -371,6 +382,9 @@
 						Transfer expiry in {countdown}
 
 					</p>
+					<div class="pt-2">
+						<Button on:click={approveTransfer}>Approve</Button>
+					</div>
 				{:else if progressPercentage === 100}
 					<p class="text-green-500 font-semibold">
 						Transfer complete!
@@ -379,7 +393,7 @@
 						Confirmation: {chargeId}
 					</p>
 				{:else if progressPercentage < 100}
-					<p class="text-lightgrey-500 font-semibold">
+					<p class="text-gray-700 font-semibold">
 						Transfer Progress: {progressPercentage}%
 					</p>
 
@@ -391,20 +405,29 @@
 					</div>
 				{/if}
 			</div>
-			<div class="px-6 py-3 bg-gray-100 text-right">
-				<p class="text-gray-400 text-sm">{transferId}</p>
+			<div class="px-6 py-3 bg-gray-100 flex items-center justify-between gap-4">
+				<Button on:click={navigateToRoot}>New transfer</Button>
+				{#if transferUrl}
+					<a class="text-sm underline" href={transferUrl} target="_blank">{transferId} ↗</a>
+				{:else}
+					<p class="text-gray-400 text-sm">{transferId}</p>
+				{/if}
 			</div>
 		</div>
 	{/if}
-	<br />
 	<!-- list workflows -->
+	<div class="w-full md:w-1/2 flex flex-col items-center gap-4">
 	<h2>Transfer History (1h)</h2>
-	<table class="w-full md:w-1/2 leading-normal mx-auto">
+	<table class="w-full leading-normal">
 		<thead>
 			<tr>
 				<th
 					class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
 					>Workflow ID</th
+				>
+				<th
+					class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+					>Scenario</th
 				>
 				<th
 					class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
@@ -422,7 +445,7 @@
 				>
 					<td class="px-5 py-5 border-b border-gray-200 text-sm">
 						{#if status.url}
-							<a href={status.url} target="_blank"
+							<a class="underline" href={status.url} target="_blank"
 								>{status.workflowId}</a
 							>
 						{:else}
@@ -430,17 +453,18 @@
 						{/if}
 					</td>
 					<td class="px-5 py-5 border-b border-gray-200 text-sm">
+						{scenarioName(status.scenario)}
+					</td>
+					<td class="px-5 py-5 border-b border-gray-200 text-sm">
 						{status.workflowStatus}
 
-						{#if transferId && status.workflowId && status.workflowId.startsWith(transferId) && waiting}
-							<br />
-							<Button on:click={approveTransfer}>Approve</Button>
-						{/if}
 					</td>
 				</tr>
 			{/each}
 		</tbody>
 	</table>
+	</div>
+	</div>
 
 	<h6>
 		<a

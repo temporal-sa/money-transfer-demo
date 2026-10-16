@@ -11,4 +11,5 @@ public class WorkflowStatus {
     private String workflowId;
     private String workflowStatus;
     private String url;
+    private String scenario;
 }

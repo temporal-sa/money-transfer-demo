@@ -27,6 +27,13 @@ export TEMPORAL_ADDRESS=localhost:7403
 export TEMPORAL_ALLOW_PLAINTEXT=true
 ```
 
+(optional) link workflow IDs to your Temporal Web UI. Temporal Cloud and `localhost:7233` are detected; set it for
+anything else:
+
+```bash
+export TEMPORAL_UI_URL=http://localhost:8403
+```
+
 (optional) set a task queue name
 
 ```bash

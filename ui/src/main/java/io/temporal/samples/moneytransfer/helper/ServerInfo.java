@@ -31,6 +31,25 @@ public class ServerInfo {
       return getEnv("TEMPORAL_API_KEY", "");
     }
 
+    // Base URL of the Temporal Web UI for links; empty when unknown
+    public static String getUiUrl() {
+        String url = getEnv("TEMPORAL_UI_URL", "");
+        if (url.isEmpty()) {
+            String address = getAddress();
+            if (address.contains(".tmprl.cloud") || address.contains(".api.temporal.io")) {
+                url = "https://cloud.temporal.io";
+            } else if (address.equals("localhost:7233")) {
+                url = "http://localhost:8233";
+            }
+        }
+        return url.replaceAll("/+$", "");
+    }
+
+    // Link to this namespace's workflow list; empty when the UI URL is unknown
+    public static String getWorkflowsUrl() {
+        return getUiUrl().isEmpty() ? "" : getUiUrl() + "/namespaces/" + getNamespace() + "/workflows";
+    }
+
     // Opt-in for a local server on a non-default address, e.g. a dev server on another port
     public static boolean getAllowPlaintext() {
         return getEnv("TEMPORAL_ALLOW_PLAINTEXT", "false").equalsIgnoreCase("true");
@@ -52,6 +71,7 @@ public class ServerInfo {
         info.put("namespace", getNamespace());
         info.put("address", getAddress());
         info.put("taskQueue", getTaskqueue());
+        info.put("url", getWorkflowsUrl());
         if (getApiKey().isEmpty()) {
             info.put("certPath", getCertPath());
             info.put("keyPath", getKeyPath());

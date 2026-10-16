@@ -9,6 +9,7 @@ import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsResponse;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowExecutionMetadata;
 import io.temporal.samples.moneytransfer.helper.ServerInfo;
+import io.temporal.samples.moneytransfer.model.ExecutionScenario;
 import io.temporal.samples.moneytransfer.model.WorkflowStatus;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
@@ -58,6 +59,7 @@ public class TransferLister {
             workflowStatusOpen.setWorkflowId(workflowExecutionMetadata.getExecution().getWorkflowId());
             workflowStatusOpen.setWorkflowStatus(getWorkflowStatus(workflowExecutionMetadata.getStatus().toString()));
             workflowStatusOpen.setUrl(getWorkflowUrl(workflowExecutionMetadata.getExecution().getWorkflowId()));
+            workflowStatusOpen.setScenario(getScenario(workflowExecutionMetadata.getWorkflowType()));
             workflowStatusList.add(workflowStatusOpen);
         }
 
@@ -66,6 +68,7 @@ public class TransferLister {
             workflowStatusClosed.setWorkflowId(workflowExecutionMetadata.getExecution().getWorkflowId());
             workflowStatusClosed.setWorkflowStatus(getWorkflowStatus(workflowExecutionMetadata.getStatus().toString()));
             workflowStatusClosed.setUrl(getWorkflowUrl(workflowExecutionMetadata.getExecution().getWorkflowId()));
+            workflowStatusClosed.setScenario(getScenario(workflowExecutionMetadata.getWorkflowType()));
             workflowStatusList.add(workflowStatusClosed);
         }
 
@@ -118,12 +121,14 @@ public class TransferLister {
         return timestamp;
     }
 
+    private static String getScenario(String workflowType) {
+        ExecutionScenario scenario = ExecutionScenario.fromWorkflowType(workflowType);
+        return scenario == null ? "" : scenario.name();
+    }
+
     private static String getWorkflowUrl(String workflowId) {
-        String url = "";
-        if (ServerInfo.getAddress().endsWith(".tmprl.cloud:7233")) {
-            url = "https://cloud.temporal.io/namespaces/" + ServerInfo.getNamespace() + "/workflows/" + workflowId;
-        }
-        return url;
+        String workflowsUrl = ServerInfo.getWorkflowsUrl();
+        return workflowsUrl.isEmpty() ? "" : workflowsUrl + "/" + workflowId;
     }
 
     public static void main(String[] args) throws FileNotFoundException, SSLException {

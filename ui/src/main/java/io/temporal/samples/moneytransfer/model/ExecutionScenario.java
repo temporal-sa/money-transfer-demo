@@ -17,4 +17,14 @@ public enum ExecutionScenario {
     public String getWorkflowType() {
         return this.workflowType;
     }
+
+    // The scenario a workflow type runs, or null for a type this UI didn't start
+    public static ExecutionScenario fromWorkflowType(String workflowType) {
+        for (ExecutionScenario scenario : values()) {
+            if (scenario.workflowType.equals(workflowType)) {
+                return scenario;
+            }
+        }
+        return null;
+    }
 }
