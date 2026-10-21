@@ -128,7 +128,7 @@ _The organization of UI code is 'less than perfect'. It's a todo list item for t
 
 * The UI code is based on the [SvelteKit](https://kit.svelte.dev/) framework.
 * It lives in
-  the [Typescript version of the Money Transfer example](https://github.com/steveandroulakis/temporal-money-transfer)
+  the [Typescript version of the Money Transfer example](https://github.com/temporal-sa/temporal-money-transfer-typescript)
   under `./ui`.
 * A compiled version was built and copied to this Java example repository
 * To modify and test the UI:
@@ -137,10 +137,10 @@ _The organization of UI code is 'less than perfect'. It's a todo list item for t
     * Run and test that version, it will build the UI
     * If the UI works in the Typescript version, it will work in the Java one
 * Deploy a new version of the UI into the Java example
-    * Remove the existing UI directory: `temporal-money-transfer-java/core/src/main/resources/svelte_ui`
+    * Remove the existing UI directory: `temporal-money-transfer-demo/ui/src/main/resources/svelte_ui`
     * Copy the UI from the Typescript example to the Java example:
 
 ```bash
-cp -r /path/to/temporal-money-transfer/server/build/* \
-      /path/to/temporal-money-transfer-java/core/src/main/resources/svelte_ui/
+cp -r /path/to/temporal-money-transfer-typescript/server/build/* \
+      /path/to/temporal-money-transfer-demo/ui/src/main/resources/svelte_ui/
 ```
