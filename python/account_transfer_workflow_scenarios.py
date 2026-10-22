@@ -106,22 +106,19 @@ class AccountTransferWorkflowScenarios:
         else:
             workflow.logger.info(f"Approval not applied. Transfer is not waiting for approval")
 
-    # TODO: Implement Update
+    @workflow.update(name="approveTransferUpdate")
     def approveTransferUpdate(self) -> str:
         workflow.logger.info(f"Approve Update Validated: Approving Transfer")
         self.approved = True
         return "successfully approved transfer"
 
-    # TODO: Implement Validator
+    @approveTransferUpdate.validator
     def approveTransferUpdateValidator(self) -> None:
         workflow.logger.info(f"Approve Update Received: Validating")
-        if approved:
-            # TODO: Validate this is the right error to throw
+        if self.approved:
             raise ApplicationError(f"Validation Failed: Transfer already approved")
         if self.transferState != "waiting":
-            # TODO: validate this is the right error to throw
             raise ApplicationError(f"Validation Failed: Transfer doesn't require approval")
-
 
     @workflow.query(name="transferStatus")
     def queryTransferStatus(self) -> TransferStatus:
@@ -131,7 +128,6 @@ class AccountTransferWorkflowScenarios:
         if self.ADVANCED_VISIBILITY == self.workflow_type:
             workflow.logger.info(f"Advanced visibility... On step: {step}")
             workflow.upsert_search_attributes([self.WORKFLOW_STEP.value_set(step)])
-
 
     async def updateProgress(self, progress: int, sleep: int) -> None:
         await self.updateProgressStatus(progress, sleep, "running")
