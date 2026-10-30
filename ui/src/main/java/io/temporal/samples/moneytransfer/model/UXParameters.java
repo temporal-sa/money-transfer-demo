@@ -9,9 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UXParameters {
     private int amount;
+    private String fromAccount;
+    private String toAccount;
     private ExecutionScenario scenario;
 
     public TransferInput toTransferInput() {
-        return new TransferInput(this.amount, "fromAccount", "toAccount");
+        return new TransferInput(this.amount,
+                fromAccount != null ? fromAccount : "fromAccount", toAccount != null ? toAccount : "toAccount");
     }
 }

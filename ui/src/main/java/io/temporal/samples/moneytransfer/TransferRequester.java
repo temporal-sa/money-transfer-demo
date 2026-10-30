@@ -7,6 +7,8 @@ import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
+import io.temporal.common.SearchAttributeKey;
+import io.temporal.common.SearchAttributes;
 import io.temporal.samples.moneytransfer.helper.ServerInfo;
 import io.temporal.samples.moneytransfer.model.ExecutionScenario;
 import io.temporal.samples.moneytransfer.model.TransferInput;
@@ -15,6 +17,8 @@ import io.temporal.samples.moneytransfer.model.TransferStatus;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
 import javax.net.ssl.SSLException;
+import java.time.Instant;
+import java.util.Map;
 import java.io.FileNotFoundException;
 
 import static io.temporal.samples.moneytransfer.TemporalClient.getWorkflowServiceStubsWithHeaders;
@@ -61,6 +65,20 @@ public class TransferRequester {
         WorkflowOptions options = WorkflowOptions.newBuilder()
                 .setWorkflowId(referenceNumber)
                 .setTaskQueue(TASK_QUEUE)
+                // Shown at the top of the workflow page in the Temporal UI
+                .setStaticSummary(String.format("Transfer $%d from %s to %s",
+                        transferInput.getAmount(), transferInput.getFromAccount(), transferInput.getToAccount()))
+                .setStaticDetails("Scenario: **" + scenario.name() + "** (`" + workflowType + "`), started from the Money Transfer UI")
+                // Business fields to search on, e.g. TransferAmount > 500 (indexed in plain text, never encrypted)
+                .setTypedSearchAttributes(SearchAttributes.newBuilder()
+                        .set(SearchAttributeKey.forLong("TransferAmount"), (long) transferInput.getAmount())
+                        .set(SearchAttributeKey.forKeyword("FromAccount"), transferInput.getFromAccount())
+                        .build())
+                // Context to read but never search on. Unlike search attributes, the memo is encrypted
+                .setMemo(Map.of(
+                        "channel", "Money Transfer web UI",
+                        "payee", transferInput.getToAccount(),
+                        "requestedAt", Instant.now().toString()))
                 .build();
         WorkflowStub transferWorkflow = client.newUntypedWorkflowStub(workflowType, options);
         transferWorkflow.start(transferInput);

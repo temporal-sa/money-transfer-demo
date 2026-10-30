@@ -84,6 +84,8 @@
 				},
 				body: JSON.stringify({
 					amount: amount,
+					fromAccount: fromAccount,
+					toAccount: toAccount,
 					scenario: scenario,
 					interval: scheduleInterval,
 					count: scheduleCount,
@@ -105,6 +107,8 @@
 				},
 				body: JSON.stringify({
 					amount: amount,
+					fromAccount: fromAccount,
+					toAccount: toAccount,
 					scenario: scenario,
 				}),
 			});
