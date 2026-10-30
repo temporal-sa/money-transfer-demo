@@ -77,6 +77,7 @@ public class TransferRequester {
                 // Context to read but never search on. Unlike search attributes, the memo is encrypted
                 .setMemo(Map.of(
                         "channel", "Money Transfer web UI",
+                        "scenario", scenario.name(),
                         "payee", transferInput.getToAccount(),
                         "requestedAt", Instant.now().toString()))
                 .build();

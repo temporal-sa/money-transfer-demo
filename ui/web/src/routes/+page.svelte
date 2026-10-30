@@ -27,6 +27,7 @@
 	let chargeId = "";
 	let failed = false;
 	let waiting = false;
+	let approved = false; // clicked Approve: acknowledge it until the workflow moves on
 	$: submittedView = transferSubmitted && !scheduleTransferSubmitted;
 	// "API Downtime (recover on 5th attempt)" -> "API Downtime", for the history table
 	const scenarioName = (value) =>
@@ -53,7 +54,6 @@
 	let scenario = "HAPPY_PATH";
 	const scenarios = [
 		{ label: 'Normal "Happy Path" Execution', value: "HAPPY_PATH" },
-		{ label: "Advanced Visibility", value: "ADVANCED_VISIBILITY" },
 		{ label: "Require Human-In-Loop Approval", value: "HUMAN_IN_LOOP" },
 		{
 			label: "API Downtime (recover on 5th attempt)",
@@ -72,6 +72,7 @@
 	let workflowStatuses = [];
 
 	async function transferMoney() {
+		approved = false;
 		if (scheduleTransfer) {
 			// Handle scheduled transfers
 			console.log(
@@ -120,6 +121,7 @@
 	}
 
 	async function approveTransfer() {
+		approved = true;
 		// Existing one-time transfer logic
 		console.log(`approving $${transferId}`);
 
@@ -379,6 +381,10 @@
 					<!-- <p class="text-gray-400 text-sm">
 						Confirmation: {chargeId}
 					</p> -->
+				{:else if waiting && approved}
+					<p class="text-green-600 font-semibold">
+						✓ Approved. The transfer continues in a few seconds…
+					</p>
 				{:else if waiting}
 					<p class="text-orange-500 font-semibold">
 						Approval required.

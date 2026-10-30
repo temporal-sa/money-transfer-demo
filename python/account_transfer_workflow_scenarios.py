@@ -20,7 +20,7 @@ class AccountTransferWorkflowScenarios:
 
     WORKFLOW_STEP = SearchAttributeKey.for_keyword("Step")
 
-    approvalTime = 30
+    approvalTime = 60
     approved = False
 
     def __init__(self) -> None:
@@ -72,9 +72,18 @@ class AccountTransferWorkflowScenarios:
             retry_policy=self.retry_policy)
         await self.updateProgress(50, 3)
 
+
+
+
+
+
         if self.BUG == self.workflow_type:
             # simulate bug
             raise RuntimeError("Simulated bug - fix me!")
+
+
+
+
 
         # Deposit
         self.upsertStep("Deposit")
