@@ -36,7 +36,8 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self) -> None:
-        fn = {"/decode": codec.decode, "/encode": codec.encode}.get(self.path)
+        # The UI adds a query string (?preserveStorageRefs=true), so match on the path alone.
+        fn = {"/decode": codec.decode, "/encode": codec.encode}.get(urlparse(self.path).path)
         if not fn:
             self.send_response(404)
             self.end_headers()
