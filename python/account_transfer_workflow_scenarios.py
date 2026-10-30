@@ -49,6 +49,13 @@ class AccountTransferWorkflowScenarios:
         if self.NEEDS_APPROVAL == self.workflow_type:
             logger.info(f"Waiting on 'approveTransfer' Signal or Update for workflow ID: {workflow.info().workflow_id}")
             await self.updateProgressStatus(30, 0, "waiting")
+            self.upsertStep("Waiting for approval")
+            # Tell whoever opens this workflow what it needs, and by when
+            deadline = workflow.now() + timedelta(seconds=self.approvalTime)
+            workflow.set_current_details(
+                f"**Now:** ✋ Waiting for approval until {deadline:%H:%M:%S} UTC, then it cancels\n\n"
+                f"Approve in the Money Transfer UI, or: "
+                f"`temporal workflow signal -w {workflow.info().workflow_id} --name approveTransfer`")
 
             # Wait for approval for up to approvalTime
             try:
@@ -126,9 +133,8 @@ class AccountTransferWorkflowScenarios:
         return TransferStatus(self.progress, self.transferState, "", self.depositResponse, self.approvalTime)
 
     def upsertStep(self, step: str) -> None:
-        if self.ADVANCED_VISIBILITY == self.workflow_type:
-            workflow.logger.info(f"Advanced visibility... On step: {step}")
-            workflow.upsert_search_attributes([self.WORKFLOW_STEP.value_set(step)])
+        # Every scenario, so you can search on it: Step = 'Waiting for approval'
+        workflow.upsert_search_attributes([self.WORKFLOW_STEP.value_set(step)])
 
 
     async def updateProgress(self, progress: int, sleep: int) -> None:

@@ -15,6 +15,7 @@ from account_transfer_workflow import AccountTransferWorkflow
 from account_transfer_workflow_scenarios import AccountTransferWorkflowScenarios
 from activities import AccountTransferActivities
 from codec import EncryptionCodec
+from narrative import NarrativeInterceptor
 
 async def build_client():
     address = os.getenv("TEMPORAL_ADDRESS", "127.0.0.1:7233")
@@ -63,6 +64,8 @@ async def main():
 
     activities = AccountTransferActivities()
 
+    # Writes the transfer's story into the Temporal UI; see narrative.py
+
     worker = Worker(
         client,
         task_queue=taskQueue,
@@ -72,6 +75,7 @@ async def main():
                     activities.deposit,
                     activities.sendNotification,
                     activities.undoWithdraw],
+        interceptors=[NarrativeInterceptor()],
     )
     print(f"Connecting to Temporal on {address}")
     print("Python money transfer worker starting...")
