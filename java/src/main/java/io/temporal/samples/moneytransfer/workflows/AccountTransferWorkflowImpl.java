@@ -1,5 +1,7 @@
 package io.temporal.samples.moneytransfer.workflows;
 
+import io.temporal.activity.ActivityOptions;
+import io.temporal.common.RetryOptions;
 import io.temporal.samples.moneytransfer.activities.AccountTransferActivities;
 import io.temporal.samples.moneytransfer.model.DepositResponse;
 import io.temporal.samples.moneytransfer.model.TransferInput;
@@ -19,6 +21,35 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
             AccountTransferActivities.activityOptions
     );
 
+    // Withdraw, with every failure-handling option spelled out. All of it is declarative:
+    // no try/catch, no retry loop, no sleep. The other three calls get the same behaviour from the
+    // shared activityOptions. In Java, options usually go on the stub rather than the call, so Withdraw gets its own stub.
+    private final AccountTransferActivities withdrawActivities = Workflow.newActivityStub(
+            AccountTransferActivities.class,
+            ActivityOptions.newBuilder()
+                    // Time to complete, per attempt: if the bank API hangs or the worker dies mid-call,
+                    // Temporal gives up on this attempt after 5s and retries it. Always set this one.
+                    .setStartToCloseTimeout(Duration.ofSeconds(5))
+                    // Time to complete, overall: the whole withdrawal, every retry included, gets 5 minutes.
+                    // This, not a count of attempts, is what bounds the retries below.
+                    .setScheduleToCloseTimeout(Duration.ofMinutes(5))
+                    // Time to start: how long the task may wait in the queue for a worker. Off on purpose:
+                    // it is never retried, so a worker outage longer than this would fail the transfer.
+                    // .setScheduleToStartTimeout(Duration.ofMinutes(1))
+                    // Heartbeats: for long-running work that reports progress, so a lost worker is noticed early.
+                    // A withdrawal takes a second, so it doesn't heartbeat.
+                    // .setHeartbeatTimeout(Duration.ofSeconds(10))
+                    .setRetryOptions(RetryOptions.newBuilder()
+                            .setInitialInterval(Duration.ofSeconds(1))  // first retry after 1s
+                            .setBackoffCoefficient(2.0)                 // then 2s, 4s, 8s ... backing off the struggling API
+                            .setMaximumInterval(Duration.ofSeconds(30)) // but never wait more than 30s between tries
+                            .setMaximumAttempts(0)                      // 0 = unlimited; the 5-minute budget is the limit
+                            // Errors that retrying can't fix stop at once, e.g. .setDoNotRetry("InsufficientFunds").
+                            // Deposit does the same from the other side: it throws newNonRetryableFailure(..., "InvalidAccount").
+                            .build())
+                    .build()
+    );
+
     private int progress = 0;
     private String transferState = "starting";
     private DepositResponse depositResponse = new DepositResponse("");
@@ -33,8 +64,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
         activities.validate(input);
         updateProgress(25, 1);
 
-        // Withdraw
-        activities.withdraw(idempotencyKey, input.getAmount(), type);
+        // Withdraw: options spelled out on withdrawActivities above
+        withdrawActivities.withdraw(idempotencyKey, input.getAmount(), type);
         updateProgress(50, 3);
 
         // Deposit

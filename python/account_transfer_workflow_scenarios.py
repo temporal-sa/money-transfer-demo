@@ -20,7 +20,7 @@ class AccountTransferWorkflowScenarios:
 
     WORKFLOW_STEP = SearchAttributeKey.for_keyword("Step")
 
-    approvalTime = 60
+    approvalTime = 300  # 5 minutes, so the demo isn't rushed
     approved = False
 
     def __init__(self) -> None:
@@ -71,6 +71,7 @@ class AccountTransferWorkflowScenarios:
             start_to_close_timeout=self.start_to_close_timeout,
             retry_policy=self.retry_policy)
         await self.updateProgress(50, 3)
+
 
 
 
