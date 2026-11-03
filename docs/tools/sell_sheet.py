@@ -113,6 +113,40 @@ def panel(name: str) -> str:
     return run.stdout
 
 
+def diagram() -> str:
+    """The four steps as one static SVG (no script): step boxes, what each means for Revedia, and the
+    Temporal Service recording every step underneath."""
+    steps = [("1", "Validate", "OTC: parse and check the message", "SAP: is the document known?"),
+             ("2", "Withdraw", "OTC: store it, match the reply", "SAP: post the payment, once"),
+             ("3", "Deposit", "Report: one country at a time", "Heartbeat after each batch"),
+             ("4", "Notify", "Tell the customer or the UI", "Update the database")]
+    bw, gap, x0, y0 = 320, 44, 24, 24
+    out = []
+    for i, (n, name, l1, l2) in enumerate(steps):
+        x = x0 + i * (bw + gap)
+        hb = name == "Deposit"
+        stroke = "var(--green)" if hb else "var(--uv)"
+        out.append(f'<g><title>{name}: {l1}; {l2}</title>'
+                   f'<rect x="{x}" y="{y0}" width="{bw}" height="140" rx="6" fill="var(--panel)" stroke="{stroke}" stroke-width="1.5"/>'
+                   f'<text x="{x+16}" y="{y0+30}" font-family="var(--mono)" font-size="13" fill="var(--lilac)">STEP {n}</text>'
+                   f'<text x="{x+16}" y="{y0+58}" font-family="var(--sans)" font-size="26" font-weight="600" fill="var(--fg)">{name}</text>'
+                   f'<text x="{x+16}" y="{y0+92}" font-family="var(--sans)" font-size="16" fill="#7fd4ff">{l1}</text>'
+                   f'<text x="{x+16}" y="{y0+118}" font-family="var(--sans)" font-size="16" fill="#7fd4ff">{l2}</text></g>')
+        if i < 3:
+            ax = x + bw
+            out.append(f'<line x1="{ax+4}" y1="{y0+66}" x2="{ax+gap-8}" y2="{y0+66}" stroke="var(--muted)" stroke-width="1.5"/>'
+                       f'<path d="M{ax+gap-8} {y0+60} l8 6 l-8 6z" fill="var(--muted)"/>')
+    w = x0 * 2 + 4 * bw + 3 * gap
+    by = y0 + 140 + 22
+    out.append(f'<g><title>Every step is recorded by the Temporal Service, so a crash resumes at the next step</title>'
+               f'<rect x="{x0}" y="{by}" width="{w - 2*x0}" height="46" rx="6" fill="var(--panel-2)" stroke="var(--line)"/>'
+               f'<text x="{w/2}" y="{by+30}" text-anchor="middle" font-family="var(--sans)" font-size="17" fill="var(--fg)">'
+               f'The Temporal Service records each step. A crash, a redeploy or an outage resumes at the next step, not the top.</text></g>')
+    h = by + 46 + 20
+    return (f'<svg viewBox="0 0 {w} {h}" width="100%" role="img" aria-label="Four steps in order: validate, withdraw, deposit, notify, '
+            f'recorded by the Temporal Service" style="display:block">' + "".join(out) + "</svg>")
+
+
 def walk(name: str) -> str:
     notes = "".join(f'        <li><span class="n">{n}</span><span>{t}</span></li>\n' for n, t in PANELS[name][2])
     return f'<div class="walk">\n      {panel(name)}\n      <ol class="notes">\n{notes}      </ol>\n    </div>'
@@ -147,6 +181,16 @@ header .lede, .sec-head p { max-width: 64rem; }
     <h1>The money-transfer demo, read as Revedia’s workloads</h1>
     <p class="lede">This is Temporal’s standard demo, not a Revedia build. Watch the shape rather than the domain. A transfer is four steps in order (validate, withdraw, deposit, notify), each calling a system that can fail. That’s also an OTC response, an invoice posted to SAP, and a report working through its countries. The workflow and its steps are {lines} lines of plain Java; every line in <span class="rv" style="display:inline">blue</span> says what a step means for Revedia.</p>
   </header>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">The shape</div>
+      <h2>Four steps, recorded as they run</h2>
+    </div>
+    <div class="table-wrap" style="padding:8px 0">
+      {diagram()}
+    </div>
+  </section>
 
   <section>
     <div class="sec-head">

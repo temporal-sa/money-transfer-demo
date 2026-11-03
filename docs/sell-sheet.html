@@ -57,6 +57,11 @@ pre.diff { white-space: pre-wrap; overflow-wrap: break-word; }
 .tok-k, .tok-kn, .tok-kc, .tok-ow { color: #a5abff; }
 .tok-s, .tok-s1, .tok-s2, .tok-sa, .tok-se, .tok-sd { color: var(--green); }
 .tok-sd { color: var(--dim); }
+/* inventory table: group rows, and a used / not-used mark that is text, not only colour */
+tr.grp td { font: 600 11px/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--lilac); background: var(--panel-2); }
+.yes { color: var(--green); font-weight: 600; }
+.no { color: var(--dim); }
+tr.none td { color: var(--dim); }
 .tok-si { color: #ffd479; }
 .tok-mi, .tok-mf { color: #ffb38a; }
 .tok-nb, .tok-bp { color: #7fd4ff; }
@@ -103,6 +108,16 @@ header .lede, .sec-head p { max-width: 64rem; }
     <h1>The money-transfer demo, read as Revedia’s workloads</h1>
     <p class="lede">This is Temporal’s standard demo, not a Revedia build. Watch the shape rather than the domain. A transfer is four steps in order (validate, withdraw, deposit, notify), each calling a system that can fail. That’s also an OTC response, an invoice posted to SAP, and a report working through its countries. The workflow and its steps are 219 lines of plain Java; every line in <span class="rv" style="display:inline">blue</span> says what a step means for Revedia.</p>
   </header>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">The shape</div>
+      <h2>Four steps, recorded as they run</h2>
+    </div>
+    <div class="table-wrap" style="padding:8px 0">
+      <svg viewBox="0 0 1460 252" width="100%" role="img" aria-label="Four steps in order: validate, withdraw, deposit, notify, recorded by the Temporal Service" style="display:block"><g><title>Validate: OTC: parse and check the message; SAP: is the document known?</title><rect x="24" y="24" width="320" height="140" rx="6" fill="var(--panel)" stroke="var(--uv)" stroke-width="1.5"/><text x="40" y="54" font-family="var(--mono)" font-size="13" fill="var(--lilac)">STEP 1</text><text x="40" y="82" font-family="var(--sans)" font-size="26" font-weight="600" fill="var(--fg)">Validate</text><text x="40" y="116" font-family="var(--sans)" font-size="16" fill="#7fd4ff">OTC: parse and check the message</text><text x="40" y="142" font-family="var(--sans)" font-size="16" fill="#7fd4ff">SAP: is the document known?</text></g><line x1="348" y1="90" x2="380" y2="90" stroke="var(--muted)" stroke-width="1.5"/><path d="M380 84 l8 6 l-8 6z" fill="var(--muted)"/><g><title>Withdraw: OTC: store it, match the reply; SAP: post the payment, once</title><rect x="388" y="24" width="320" height="140" rx="6" fill="var(--panel)" stroke="var(--uv)" stroke-width="1.5"/><text x="404" y="54" font-family="var(--mono)" font-size="13" fill="var(--lilac)">STEP 2</text><text x="404" y="82" font-family="var(--sans)" font-size="26" font-weight="600" fill="var(--fg)">Withdraw</text><text x="404" y="116" font-family="var(--sans)" font-size="16" fill="#7fd4ff">OTC: store it, match the reply</text><text x="404" y="142" font-family="var(--sans)" font-size="16" fill="#7fd4ff">SAP: post the payment, once</text></g><line x1="712" y1="90" x2="744" y2="90" stroke="var(--muted)" stroke-width="1.5"/><path d="M744 84 l8 6 l-8 6z" fill="var(--muted)"/><g><title>Deposit: Report: one country at a time; Heartbeat after each batch</title><rect x="752" y="24" width="320" height="140" rx="6" fill="var(--panel)" stroke="var(--green)" stroke-width="1.5"/><text x="768" y="54" font-family="var(--mono)" font-size="13" fill="var(--lilac)">STEP 3</text><text x="768" y="82" font-family="var(--sans)" font-size="26" font-weight="600" fill="var(--fg)">Deposit</text><text x="768" y="116" font-family="var(--sans)" font-size="16" fill="#7fd4ff">Report: one country at a time</text><text x="768" y="142" font-family="var(--sans)" font-size="16" fill="#7fd4ff">Heartbeat after each batch</text></g><line x1="1076" y1="90" x2="1108" y2="90" stroke="var(--muted)" stroke-width="1.5"/><path d="M1108 84 l8 6 l-8 6z" fill="var(--muted)"/><g><title>Notify: Tell the customer or the UI; Update the database</title><rect x="1116" y="24" width="320" height="140" rx="6" fill="var(--panel)" stroke="var(--uv)" stroke-width="1.5"/><text x="1132" y="54" font-family="var(--mono)" font-size="13" fill="var(--lilac)">STEP 4</text><text x="1132" y="82" font-family="var(--sans)" font-size="26" font-weight="600" fill="var(--fg)">Notify</text><text x="1132" y="116" font-family="var(--sans)" font-size="16" fill="#7fd4ff">Tell the customer or the UI</text><text x="1132" y="142" font-family="var(--sans)" font-size="16" fill="#7fd4ff">Update the database</text></g><g><title>Every step is recorded by the Temporal Service, so a crash resumes at the next step</title><rect x="24" y="186" width="1412" height="46" rx="6" fill="var(--panel-2)" stroke="var(--line)"/><text x="730.0" y="216" text-anchor="middle" font-family="var(--sans)" font-size="17" fill="var(--fg)">The Temporal Service records each step. A crash, a redeploy or an outage resumes at the next step, not the top.</text></g></svg>
+    </div>
+  </section>
 
   <section>
     <div class="sec-head">

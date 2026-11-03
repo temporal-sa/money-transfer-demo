@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import { onMount, onDestroy } from "svelte";
 	import Badge from "@temporalio/ui/holocene/badge.svelte";
-	import Loading from "@temporalio/ui/holocene/loading.svelte";
+	import Logo from "@temporalio/ui/holocene/logo.svelte";
 	import PageTitle from "@temporalio/ui/components/page-title.svelte";
 	import Button from "@temporalio/ui/holocene/button.svelte";
 	import githubMark from "../github-mark.svg";
@@ -264,33 +264,35 @@
 </script>
 
 <PageTitle title="Money Transfer App" url={$page.url.href} />
-<section class="flex flex-col gap-8 items-center">
-	<Loading title="" on:click={navigateToRoot} />
-	<h2 class="text-2xl flex items-center gap-1">Transfer Money</h2>
+<section class="flex flex-col gap-4 items-center">
+	<button type="button" class="flex items-center gap-2" title="New transfer" on:click={navigateToRoot}>
+		<Logo width="28px" height="28px" isCloud={true} />
+		<h2 class="text-xl font-medium">Transfer Money</h2>
+	</button>
 	{#if !transferSubmitted}
-		<div class="grid w-full max-w-5xl grid-cols-1 md:grid-cols-2 gap-6 items-start">
-			<div class="flex flex-col gap-6">
-				<fieldset class="w-full border border-gray-200 p-4 rounded-md">
-					<legend class="float-left w-full mb-2 text-sm font-medium text-gray-700">From Account</legend>
+		<div class="grid w-full max-w-5xl grid-cols-1 md:grid-cols-2 gap-4 items-start">
+			<div class="flex flex-col gap-4">
+				<fieldset class="w-full border border-gray-200 px-4 py-2 rounded-md">
+					<legend class="float-left w-full mb-1 text-sm font-medium text-gray-700">From Account</legend>
 					{#each fromAccounts as account (account)}
-						<label class="clear-left flex items-center gap-3 py-1 text-lg cursor-pointer">
+						<label class="clear-left flex items-center gap-3 py-0.5 text-base cursor-pointer">
 							<input type="radio" name="from-account" value={account} bind:group={fromAccount} class="h-4 w-4 accent-gray-900" />
 							{account}
 						</label>
 					{/each}
 				</fieldset>
-				<fieldset class="w-full border border-gray-200 p-4 rounded-md">
-					<legend class="float-left w-full mb-2 text-sm font-medium text-gray-700">To Account</legend>
+				<fieldset class="w-full border border-gray-200 px-4 py-2 rounded-md">
+					<legend class="float-left w-full mb-1 text-sm font-medium text-gray-700">To Account</legend>
 					{#each toAccounts as account (account)}
-						<label class="clear-left flex items-center gap-3 py-1 text-lg cursor-pointer">
+						<label class="clear-left flex items-center gap-3 py-0.5 text-base cursor-pointer">
 							<input type="radio" name="to-account" value={account} bind:group={toAccount} class="h-4 w-4 accent-gray-900" />
 							{account}
 						</label>
 					{/each}
 				</fieldset>
 			</div>
-			<div class="flex flex-col gap-6">
-				<div class="w-full border border-gray-200 p-4 rounded-md">
+			<div class="flex flex-col gap-4">
+				<div class="w-full border border-gray-200 px-4 py-2 rounded-md">
 					<label for="amount" class="block text-sm font-medium text-gray-700"
 						>Amount (In USD)</label
 					>
@@ -298,13 +300,13 @@
 						id="amount"
 						type="number"
 						bind:value={amount}
-						class="mt-1 block w-full text-3xl"
+						class="mt-1 block w-full text-2xl"
 					/>
 				</div>
-				<fieldset class="w-full border border-gray-200 p-4 rounded-md">
-					<legend class="float-left w-full mb-2 text-sm font-medium text-gray-400">Debug: Simulate</legend>
+				<fieldset class="w-full border border-gray-200 px-4 py-2 rounded-md">
+					<legend class="float-left w-full mb-1 text-sm font-medium text-gray-400">Debug: Simulate</legend>
 					{#each scenarios as scenarioObj (scenarioObj.value)}
-						<label class="clear-left flex items-center gap-3 py-1 text-lg cursor-pointer">
+						<label class="clear-left flex items-center gap-3 py-0.5 text-base cursor-pointer">
 							<input type="radio" name="simulate" value={scenarioObj.value} bind:group={scenario} class="h-4 w-4 accent-gray-900" />
 							{scenarioObj.label}
 						</label>
@@ -353,7 +355,7 @@
 			{transferId}
 		</h3>
 	{/if}
-	<div class="flex w-full flex-col items-center gap-8">
+	<div class="flex w-full flex-col items-center gap-4">
 	{#if submittedView}
 		<div
 			class="w-full md:w-1/2 bg-white shadow-lg rounded-lg overflow-hidden"
@@ -432,15 +434,15 @@
 		<thead>
 			<tr>
 				<th
-					class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+					class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
 					>Workflow ID</th
 				>
 				<th
-					class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+					class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
 					>Scenario</th
 				>
 				<th
-					class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+					class="px-5 py-2 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
 					>Status</th
 				>
 			</tr>
@@ -453,7 +455,7 @@
 						status.workflowId.startsWith(transferId)}
 					class="transition duration-300 ease-in-out hover:bg-gray-100"
 				>
-					<td class="px-5 py-5 border-b border-gray-200 text-sm">
+					<td class="px-5 py-2 border-b border-gray-200 text-sm">
 						{#if status.url}
 							<a class="underline" href={status.url} target="_blank"
 								>{status.workflowId}</a
@@ -462,10 +464,10 @@
 							{status.workflowId}
 						{/if}
 					</td>
-					<td class="px-5 py-5 border-b border-gray-200 text-sm">
+					<td class="px-5 py-2 border-b border-gray-200 text-sm">
 						{scenarioName(status.scenario)}
 					</td>
-					<td class="px-5 py-5 border-b border-gray-200 text-sm">
+					<td class="px-5 py-2 border-b border-gray-200 text-sm">
 						{status.workflowStatus}
 
 					</td>
