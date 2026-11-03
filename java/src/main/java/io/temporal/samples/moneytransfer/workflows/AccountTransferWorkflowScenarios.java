@@ -29,6 +29,14 @@ public class AccountTransferWorkflowScenarios implements DynamicWorkflow {
         AccountTransferActivities.activityOptions
     );
 
+    private final AccountTransferActivities depositActivities = Workflow.newActivityStub(
+        AccountTransferActivities.class,
+        AccountTransferActivities.activityOptions.toBuilder()
+            .setStartToCloseTimeout(Duration.ofSeconds(30))
+            .setHeartbeatTimeout(Duration.ofSeconds(5))
+            .build()
+    );
+
     private int progress = 0;
     private String transferState = "starting";
     private DepositResponse depositResponse = new DepositResponse("");
@@ -85,7 +93,7 @@ public class AccountTransferWorkflowScenarios implements DynamicWorkflow {
         // Deposit
         upsertStep("Deposit");
         try {
-            depositResponse = activities.deposit(idempotencyKey, input.getAmount(), type);
+            depositResponse = depositActivities.deposit(idempotencyKey, input.getAmount(), type);
             updateProgress(75, 1);
         } catch (ActivityFailure e) {
             // if deposit fails in an unrecoverable way, rollback the withdrawal and fail the workflow

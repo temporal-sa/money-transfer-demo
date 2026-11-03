@@ -1,6 +1,7 @@
 package io.temporal.samples.moneytransfer.activities;
 
 import io.temporal.activity.Activity;
+import io.temporal.activity.ActivityExecutionContext;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.model.DepositResponse;
 import io.temporal.samples.moneytransfer.model.TransferInput;
@@ -13,6 +14,7 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
 
     private static final String API_DOWNTIME = "AccountTransferWorkflowAPIDowntime";
     private static final String INVALID_ACCOUNT = "AccountTransferWorkflowInvalidAccount";
+    private static final int DEPOSIT_BATCHES = 6;
 
     private static void simulateExternalOperation(long ms) {
         try {
@@ -58,7 +60,8 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
     @Override
     public DepositResponse deposit(String idempotencyKey, float amount, String type) {
         log.info("Deposit activity started, amount = {}", amount);
-        int attempt = Activity.getExecutionContext().getInfo().getAttempt();
+        ActivityExecutionContext ctx = Activity.getExecutionContext();
+        int attempt = ctx.getInfo().getAttempt();
 
         // simulate external API call
         String error = simulateExternalOperation(1000, type, attempt);
@@ -70,6 +73,18 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
                     "Deposit activity failed, account is invalid",
                     "InvalidAccount"
             );
+        }
+
+        // Post the deposit in batches, checking in with Temporal after each one.
+        // If the Worker dies, the retry picks up after the last batch it reported, not from the start.
+        int done = ctx.getHeartbeatDetails(Integer.class).orElse(0);
+        if (done > 0) {
+            log.info("Deposit resuming after batch {} of {}", done, DEPOSIT_BATCHES);
+        }
+        for (int batch = done + 1; batch <= DEPOSIT_BATCHES; batch++) {
+            simulateExternalOperation(1500);
+            ctx.heartbeat(batch);
+            log.info("Deposit batch {} of {} posted", batch, DEPOSIT_BATCHES);
         }
 
         return new DepositResponse("example-transfer-id");

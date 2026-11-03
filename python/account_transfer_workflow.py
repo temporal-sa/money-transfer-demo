@@ -72,7 +72,8 @@ class AccountTransferWorkflow:
         self.depositResponse = await workflow.execute_activity(
             AccountTransferActivities.deposit,
             args=[idempotencyKey, input.amount, workflow_type],
-            start_to_close_timeout=self.start_to_close_timeout,
+            start_to_close_timeout=timedelta(seconds=30),  # six batches
+            heartbeat_timeout=timedelta(seconds=5),  # a dead Worker is noticed in 5 s
             retry_policy=self.retry_policy,
         )
         await self.updateProgress(75, 1)

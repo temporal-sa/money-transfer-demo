@@ -50,6 +50,15 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
                     .build()
     );
 
+    // Deposit posts in batches and heartbeats after each one, so it gets its own options too.
+    private final AccountTransferActivities depositActivities = Workflow.newActivityStub(
+            AccountTransferActivities.class,
+            AccountTransferActivities.activityOptions.toBuilder()
+                    .setStartToCloseTimeout(Duration.ofSeconds(30))  // six batches
+                    .setHeartbeatTimeout(Duration.ofSeconds(5))      // a dead Worker is noticed in 5s, not 30s
+                    .build()
+    );
+
     private int progress = 0;
     private String transferState = "starting";
     private DepositResponse depositResponse = new DepositResponse("");
@@ -68,8 +77,8 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
         withdrawActivities.withdraw(idempotencyKey, input.getAmount(), type);
         updateProgress(50, 3);
 
-        // Deposit
-        depositResponse = activities.deposit(idempotencyKey, input.getAmount(), type);
+        // Deposit: heartbeats after each batch (depositActivities above)
+        depositResponse = depositActivities.deposit(idempotencyKey, input.getAmount(), type);
         updateProgress(75, 1);
 
         // Send Notification

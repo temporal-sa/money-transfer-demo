@@ -1,4 +1,5 @@
 import asyncio
+from datetime import timedelta
 import dataclasses
 import logging
 import os
@@ -76,6 +77,8 @@ async def main():
                     activities.sendNotification,
                     activities.undoWithdraw],
         interceptors=[NarrativeInterceptor()],
+        # Send each Deposit batch's heartbeat within a second, so the UI shows the latest batch (the SDK's default batches them up)
+        max_heartbeat_throttle_interval=timedelta(seconds=1),
     )
     print(f"Connecting to Temporal on {address}")
     print("Python money transfer worker starting...")
