@@ -102,7 +102,7 @@ public class AccountTransferWorkflowScenarios implements DynamicWorkflow {
         // Send Notification
         upsertStep("Send Notification");
         activities.sendNotification(input);
-        updateProgress(100, 1, "finished");
+        updateProgress(100, 0, "finished");
 
         return new TransferOutput(depositResponse);
     }

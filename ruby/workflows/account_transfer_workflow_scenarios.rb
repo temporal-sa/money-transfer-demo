@@ -63,7 +63,7 @@ module Workflows
 
       upsert_step('SendNotification')
       send_notification(input)
-      update_progress(100, 1, 'finished')
+      update_progress(100, 0, 'finished')
 
       Models::TransferOutput.new(deposit_response: @deposit_response).deep_camelize_keys
     end

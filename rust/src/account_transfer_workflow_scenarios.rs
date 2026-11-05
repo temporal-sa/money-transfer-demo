@@ -220,7 +220,7 @@ async fn run_scenario<W: HasScenarioState>(
         )
         .await?;
     info!("notification response {notification_response:?}");
-    update_progress_status(ctx, 100, 1, TransferState::Finished).await;
+    update_progress_status(ctx, 100, 0, TransferState::Finished).await;
 
     let results = TransferOutput {
         deposit_response: ctx

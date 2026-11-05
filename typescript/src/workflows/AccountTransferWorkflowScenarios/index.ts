@@ -138,7 +138,7 @@ export async function AccountTransferWorkflowScenarios(input: TransferInput): Pr
   // Send Notification
   await upsertStep('Send Notification');
   await sendNotificationAsync(input);
-  ({progress, transferState } = await updateProgressAsyncComplex(100, 1, TRANSFER_STATE.FINISHED));
+  ({progress, transferState } = await updateProgressAsyncComplex(100, 0, TRANSFER_STATE.FINISHED));
 
   return {depositResponse};
 }
