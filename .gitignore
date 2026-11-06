@@ -24,3 +24,4 @@ tmp
 !/rust/src/bin/
 !/rust/src/bin/**
 
+Gemfile.lock
