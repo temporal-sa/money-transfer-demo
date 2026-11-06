@@ -60,7 +60,7 @@ export async function AccountTransferWorkflow(input: TransferInput): Promise<Tra
 
   // Send Notification
   await sendNotificationAsync(input);
-  ({progress, transferState } = await updateProgressAsyncComplex(100, 1, 'finished'));
+  ({progress, transferState } = await updateProgressAsyncComplex(100, 0, 'finished'));
 
   return {depositResponse};
 }

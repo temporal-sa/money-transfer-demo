@@ -108,7 +108,7 @@ impl AccountTransferWorkflow {
             )
             .await?;
         info!("notification response {:?}", handle);
-        Self::update_progress(ctx, 100u64, 1u64, TransferState::Finished).await;
+        Self::update_progress(ctx, 100u64, 0u64, TransferState::Finished).await;
         let results: TransferOutput = TransferOutput {
             deposit_response: ctx.state(|s| s.deposit_response.charge_id.clone()),
         };

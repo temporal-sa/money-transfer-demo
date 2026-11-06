@@ -64,7 +64,7 @@ func AccountTransferWorkflow(ctx workflow.Context, input app.TransferInput) (out
 	if err != nil {
 		return nil, err
 	}
-	updateProgress(ctx, 1, ts, 100)
+	updateProgress(ctx, 0, ts, 100)
 
 	output = &app.TransferOutput{
 		DepositResponse: depositResponse,

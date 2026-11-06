@@ -94,7 +94,7 @@ class AccountTransferWorkflowScenarios:
             args=[input],
             start_to_close_timeout=self.start_to_close_timeout,
             retry_policy=self.retry_policy)
-        await self.updateProgressStatus(100, 1, "finished")
+        await self.updateProgressStatus(100, 0, "finished")
 
         return TransferOutput(DepositResponse(self.depositResponse.get_chargeId()))
 

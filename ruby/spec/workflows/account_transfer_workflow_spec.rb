@@ -92,7 +92,7 @@ RSpec.describe Workflows::AccountTransferWorkflow do
       expect(workflow).to receive(:update_progress).with(25, 1).ordered
       expect(workflow).to receive(:update_progress).with(50, 3).ordered
       expect(workflow).to receive(:update_progress).with(75, 1).ordered
-      expect(workflow).to receive(:update_progress).with(100, 1, 'finished').ordered
+      expect(workflow).to receive(:update_progress).with(100, 0, 'finished').ordered
 
       workflow.execute(hash_input)
     end

@@ -36,7 +36,7 @@ public class AccountTransferWorkflow
         // Send Notification
         await Workflow.ExecuteActivityAsync((AccountTransferActivities act) =>
             act.SendNotificationAsync(input), AccountTransferActivities.options);
-        await UpdateProgressAsync(100, 1, "finished");
+        await UpdateProgressAsync(100, 0, "finished");
 
         return new TransferOutput(depositResponse);
     }
