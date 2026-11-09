@@ -26,7 +26,7 @@ If you haven't updated the setcloudenv.sh file, see the main [README](../README.
 ```
 
 ## Run Worker as a container
-If you want to pacakge the worker as a container image, a [Dockerfile](./Dockerfile) is supplied.
+If you want to package the worker as a container image, a [Dockerfile](./Dockerfile) is supplied.
 
 ### Build the container
 ```bash
