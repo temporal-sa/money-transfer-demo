@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'temporalio/workflow'
+require_relative '../models/activity_input'
 require_relative '../models/transfer_input'
 require_relative '../models/transfer_output'
 require_relative '../models/transfer_status'
@@ -26,10 +27,10 @@ module Workflows
       validate_transfer(input)
       update_progress(25, 1)
 
-      withdraw_funds(idempotency_key, input.amount, workflow_type)
+      withdraw_funds(idempotency_key, input.amount)
       update_progress(50, 3)
 
-      @deposit_response = deposit_funds(idempotency_key, input.amount, workflow_type)
+      @deposit_response = deposit_funds(idempotency_key, input.amount)
       update_progress(75, 1)
 
       send_notification(input)
@@ -61,19 +62,19 @@ module Workflows
       )
     end
 
-    def withdraw_funds(idempotency_key, amount, workflow_type)
+    def withdraw_funds(idempotency_key, amount)
       Temporalio::Workflow.execute_activity(
         Activities::WithdrawActivity,
-        idempotency_key, amount,
+        Models::ActivityInput.new(idempotency_key:, amount:).deep_camelize_keys,
         start_to_close_timeout: 5,
         retry_policy: Activities::BaseActivity::RETRY_POLICY
       )
     end
 
-    def deposit_funds(idempotency_key, amount, workflow_type)
+    def deposit_funds(idempotency_key, amount)
       Temporalio::Workflow.execute_activity(
         Activities::DepositActivity,
-        idempotency_key, amount,
+        Models::ActivityInput.new(idempotency_key:, amount:).deep_camelize_keys,
         start_to_close_timeout: 5,
         retry_policy: Activities::BaseActivity::RETRY_POLICY
       )

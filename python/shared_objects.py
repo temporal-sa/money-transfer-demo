@@ -17,6 +17,12 @@ class TransferInput:
     toAccount: str
 
 @dataclass
+class ActivityInput:
+    idempotencyKey: str
+    amount: float
+    workflowType: str
+
+@dataclass
 class TransferOutput:
     def __init__(self, depositResponse: str) -> None:
         self.depositResponse = depositResponse

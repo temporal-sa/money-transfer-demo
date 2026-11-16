@@ -38,7 +38,7 @@ RSpec.describe 'Activities' do
 
   describe Activities::WithdrawActivity do
     it 'successfully withdraws funds' do
-      result = env.run(subject, 'key123', 123)
+      result = env.run(subject, { 'idempotencyKey' => 'key123', 'amount' => 123 })
       expect(subject).to have_received(:sleep).with(1.0)
       expect(result).to eq('SUCCESS')
     end
@@ -52,7 +52,7 @@ RSpec.describe 'Activities' do
 
       it 'raises error for API downtime scenario' do
         expect do
-          env.run(subject, 'key123', 123)
+          env.run(subject, { 'idempotencyKey' => 'key123', 'amount' => 123 })
         end.to raise_error(StandardError, 'Withdraw activity failed, API unavailable')
       end
     end
@@ -67,7 +67,7 @@ RSpec.describe 'Activities' do
 
       it 'does not raise error for API downtime scenario' do
         expect do
-          env.run(subject, 'key123', 123)
+          env.run(subject, { 'idempotencyKey' => 'key123', 'amount' => 123 })
         end.not_to raise_error
       end
     end
@@ -75,7 +75,7 @@ RSpec.describe 'Activities' do
 
   describe Activities::DepositActivity do
     it 'successfully deposits funds' do
-      result = env.run(subject, 'key123', 123)
+      result = env.run(subject, { 'idempotencyKey' => 'key123', 'amount' => 123 })
       expect(subject).to have_received(:sleep).with(1.0)
       expect(result).to have_attributes(charge_id: 'example-transfer-id')
     end
@@ -89,7 +89,7 @@ RSpec.describe 'Activities' do
 
       it 'raises error for invalid account scenario' do
         expect do
-          env.run(subject, 'key123', 123)
+          env.run(subject, { 'idempotencyKey' => 'key123', 'amount' => 123 })
         end.to raise_error(Temporalio::Error::ApplicationError, 'Deposit activity failed, account is invalid')
       end
     end
@@ -103,7 +103,7 @@ RSpec.describe 'Activities' do
 
       it 'does not raise error for invalid account scenario' do
         expect do
-          env.run(subject, 'key123', 123)
+          env.run(subject, { 'idempotencyKey' => 'key123', 'amount' => 123 })
         end.not_to raise_error
       end
     end

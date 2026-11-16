@@ -42,14 +42,14 @@ module Workflows
       handle_approval_if_needed(workflow_type)
 
       upsert_step('Withdraw')
-      withdraw_funds(idempotency_key, input.amount, workflow_type)
+      withdraw_funds(idempotency_key, input.amount)
       update_progress(50, 3)
 
       handle_bug_simulation(workflow_type)
 
       upsert_step('Deposit')
       begin
-        @deposit_response = deposit_funds(idempotency_key, input.amount, workflow_type)
+        @deposit_response = deposit_funds(idempotency_key, input.amount)
         update_progress(75, 1)
       rescue  => e
         puts e

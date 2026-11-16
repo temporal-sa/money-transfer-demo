@@ -31,6 +31,7 @@ public class AccountTransferWorkflowScenarios
         var input = Workflow.PayloadConverter.ToValue<TransferInput>(args[0]);
         logger.LogInformation("Dynamic Account Transfer workflow started, type = {}", type);
         var idempotencyKey = Workflow.Random.Next().ToString();
+        var activityInput = new ActivityInput(idempotencyKey, input.Amount, type);
 
         // Validate
         UpsertStep("Validate");
@@ -55,7 +56,7 @@ public class AccountTransferWorkflowScenarios
         // Withdraw
         UpsertStep("Withdraw");
         await Workflow.ExecuteActivityAsync((AccountTransferActivities act) =>
-            act.WithdrawAsync(idempotencyKey, input.Amount, type), AccountTransferActivities.options);
+            act.WithdrawAsync(activityInput), AccountTransferActivities.options);
         await UpdateProgressAsync(50, 3);
 
         if (BUG == type)
@@ -69,7 +70,7 @@ public class AccountTransferWorkflowScenarios
         try
         {
             depositResponse = await Workflow.ExecuteActivityAsync((AccountTransferActivities act) =>
-                    act.DepositAsync(idempotencyKey, input.Amount, type), AccountTransferActivities.options);
+                    act.DepositAsync(activityInput), AccountTransferActivities.options);
             await UpdateProgressAsync(75, 1);
         }
         catch (ActivityFailureException e)

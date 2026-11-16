@@ -37,6 +37,12 @@ func AccountTransferWorkflow(ctx workflow.Context, input app.TransferInput) (out
 		return uuid.New().String()
 	}).Get(&idempotencyKey)
 
+	activityInput := app.ActivityInput{
+		IdempotencyKey: idempotencyKey,
+		Amount:         float32(input.Amount),
+		Name:           name,
+	}
+
 	// Validate
 	err = workflow.ExecuteActivity(ctx, activities.Validate, input).Get(ctx, nil)
 	if err != nil {
@@ -45,7 +51,7 @@ func AccountTransferWorkflow(ctx workflow.Context, input app.TransferInput) (out
 	updateProgress(ctx, 1, ts, 25)
 
 	// Withdraw
-	err = workflow.ExecuteActivity(ctx, activities.Withdraw, idempotencyKey, input.Amount, name).Get(ctx, nil)
+	err = workflow.ExecuteActivity(ctx, activities.Withdraw, activityInput).Get(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +59,7 @@ func AccountTransferWorkflow(ctx workflow.Context, input app.TransferInput) (out
 
 	// Deposit
 	depositResponse := app.DepositResponse{}
-	err = workflow.ExecuteActivity(ctx, activities.Deposit, idempotencyKey, input.Amount, name).Get(ctx, &depositResponse)
+	err = workflow.ExecuteActivity(ctx, activities.Deposit, activityInput).Get(ctx, &depositResponse)
 	if err != nil {
 		return nil, err
 	}

@@ -8,6 +8,12 @@ export interface TransferInput {
   toAccount: string;
 }
 
+export interface ActivityInput {
+  idempotencyKey: string;
+  amount: number;
+  type: string;
+}
+
 export interface TransferOutput {
   depositResponse: DepositResponse;
 }

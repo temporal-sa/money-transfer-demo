@@ -6,6 +6,12 @@ type TransferInput struct {
 	ToAccount   string `json:"toAccount"`
 }
 
+type ActivityInput struct {
+	IdempotencyKey string  `json:"idempotencyKey"`
+	Amount         float32 `json:"amount"`
+	Name           string  `json:"name"`
+}
+
 type DepositResponse struct {
 	DepositId string `json:"chargeId"`
 }

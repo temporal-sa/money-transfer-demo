@@ -1,16 +1,18 @@
 # frozen_string_literal: true
 
 require_relative 'base_activity'
+require_relative '../models/activity_input'
 require_relative '../models/deposit_response'
 
 module Activities
   class DepositActivity < BaseActivity
     INVALID_ACCOUNT = 'AccountTransferWorkflowInvalidAccount'
 
-    def execute(idempotency_key, amount)
+    def execute(input)
+      input = Models::ActivityInput.from_h(input)
       attempt = Temporalio::Activity::Context.current.info.attempt
       workflow_type = Temporalio::Activity::Context.current.info.workflow_type
-      logger.info("Deposit activity started. Amount: #{amount}, workflow type: #{workflow_type}, attempt: #{attempt}")
+      logger.info("Deposit activity started. Amount: #{input.amount}, workflow type: #{workflow_type}, attempt: #{attempt}")
 
       error = simulate_external_operation_with_error(1000, workflow_type, attempt)
       logger.info("Deposit activity complete. Type: #{workflow_type}, error: #{error}")

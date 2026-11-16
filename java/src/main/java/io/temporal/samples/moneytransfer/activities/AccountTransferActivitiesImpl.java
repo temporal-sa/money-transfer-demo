@@ -2,6 +2,7 @@ package io.temporal.samples.moneytransfer.activities;
 
 import io.temporal.activity.Activity;
 import io.temporal.failure.ApplicationFailure;
+import io.temporal.samples.moneytransfer.model.ActivityInput;
 import io.temporal.samples.moneytransfer.model.DepositResponse;
 import io.temporal.samples.moneytransfer.model.TransferInput;
 import lombok.extern.slf4j.Slf4j;
@@ -38,13 +39,13 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
     }
 
     @Override
-    public String withdraw(String idempotencyKey, float amount, String type) {
-        log.info("Withdraw activity started, amount = {}", amount);
+    public String withdraw(ActivityInput input) {
+        log.info("Withdraw activity started, amount = {}", input.getAmount());
         int attempt = Activity.getExecutionContext().getInfo().getAttempt();
 
         // simulate external API call
-        String error = simulateExternalOperation(1000, type, attempt);
-        log.info("Withdraw call complete, type = {}, error = {}", type, error);
+        String error = simulateExternalOperation(1000, input.getType(), attempt);
+        log.info("Withdraw call complete, type = {}, error = {}", input.getType(), error);
 
         if (API_DOWNTIME.equals(error)) {
             // a transient error, which can be retried
@@ -56,13 +57,13 @@ public class AccountTransferActivitiesImpl implements AccountTransferActivities 
     }
 
     @Override
-    public DepositResponse deposit(String idempotencyKey, float amount, String type) {
-        log.info("Deposit activity started, amount = {}", amount);
+    public DepositResponse deposit(ActivityInput input) {
+        log.info("Deposit activity started, amount = {}", input.getAmount());
         int attempt = Activity.getExecutionContext().getInfo().getAttempt();
 
         // simulate external API call
-        String error = simulateExternalOperation(1000, type, attempt);
-        log.info("Deposit call complete, type = {}, error = {}", type, error);
+        String error = simulateExternalOperation(1000, input.getType(), attempt);
+        log.info("Deposit call complete, type = {}, error = {}", input.getType(), error);
 
         if (INVALID_ACCOUNT.equals(error)) {
             // a business error, which cannot be retried

@@ -1,6 +1,7 @@
 package io.temporal.samples.moneytransfer.workflows;
 
 import io.temporal.samples.moneytransfer.activities.AccountTransferActivities;
+import io.temporal.samples.moneytransfer.model.ActivityInput;
 import io.temporal.samples.moneytransfer.model.DepositResponse;
 import io.temporal.samples.moneytransfer.model.TransferInput;
 import io.temporal.samples.moneytransfer.model.TransferOutput;
@@ -28,17 +29,18 @@ public class AccountTransferWorkflowImpl implements AccountTransferWorkflow {
         String type = Workflow.getInfo().getWorkflowType();
         log.info("Account Transfer workflow started, type = {}", type);
         String idempotencyKey = Workflow.randomUUID().toString();
+        ActivityInput activityInput = new ActivityInput(idempotencyKey, input.getAmount(), type);
 
         // Validate
         activities.validate(input);
         updateProgress(25, 1);
 
         // Withdraw
-        activities.withdraw(idempotencyKey, input.getAmount(), type);
+        activities.withdraw(activityInput);
         updateProgress(50, 3);
 
         // Deposit
-        depositResponse = activities.deposit(idempotencyKey, input.getAmount(), type);
+        depositResponse = activities.deposit(activityInput);
         updateProgress(75, 1);
 
         // Send Notification
