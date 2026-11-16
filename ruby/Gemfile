@@ -2,17 +2,17 @@
 
 source 'https://rubygems.org'
 
-ruby '>= 3.2.0'
+ruby '>= 3.4.0'
 
 gem 'temporalio'
 gem 'grpc'
-gem 'openssl', '~> 3.0'
-gem 'json', '~> 2.6'
-gem 'logger', '~> 1.5'
+gem 'openssl', '~> 3.3'
+gem 'json', '~> 2.21'
+gem 'logger', '~> 1.7'
 gem 'activesupport'
 
 group :development, :test do
-  gem 'rspec', '~> 3.12'
-  gem 'pry', '~> 0.14'
+  gem 'rspec', '~> 3.13'
+  gem 'pry', '~> 0.16'
   gem 'simplecov', '~> 0.22'
 end
