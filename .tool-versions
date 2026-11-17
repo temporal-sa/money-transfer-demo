@@ -5,5 +5,5 @@ nodejs 22.21.0
 pnpm 9.15.9
 poetry 1.8.5
 python 3.12.12
-ruby 3.2.9
+ruby 3.4.12
 rust 1.95.0
