@@ -7,6 +7,7 @@ from temporalio import workflow
 
 from activities import AccountTransferActivities
 from shared_objects import (
+    ActivityInput,
     DepositResponse,
     TransferInput,
     TransferOutput,
@@ -29,6 +30,7 @@ class AccountTransferWorkflow:
         logger = workflow.logger
         logger.info(f"Simple workflow started {workflow_type}, input = {input}")
         idempotencyKey = str(workflow.uuid4())
+        activityInput = ActivityInput(idempotencyKey, input.amount, workflow_type)
 
         # Validate
         await workflow.execute_activity(
@@ -42,7 +44,7 @@ class AccountTransferWorkflow:
         # Withdraw
         await workflow.execute_activity(
             AccountTransferActivities.withdraw,
-            args=[idempotencyKey, input.amount, workflow_type],
+            args=[activityInput],
             start_to_close_timeout=self.start_to_close_timeout,
             retry_policy=self.retry_policy,
         )
@@ -51,7 +53,7 @@ class AccountTransferWorkflow:
         # Deposit
         self.depositResponse = await workflow.execute_activity(
             AccountTransferActivities.deposit,
-            args=[idempotencyKey, input.amount, workflow_type],
+            args=[activityInput],
             start_to_close_timeout=self.start_to_close_timeout,
             retry_policy=self.retry_policy,
         )

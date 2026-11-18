@@ -47,6 +47,12 @@ func AccountTransferWorkflowScenarios(ctx workflow.Context, input app.TransferIn
 		return uuid.New().String()
 	}).Get(&idempotencyKey)
 
+	activityInput := app.ActivityInput{
+		IdempotencyKey: idempotencyKey,
+		Amount:         float32(input.Amount),
+		Name:           name,
+	}
+
 	// Validate
 	upsertStep(ctx, "Validate")
 	err = workflow.ExecuteActivity(ctx, activities.Validate, input).Get(ctx, nil)
@@ -72,7 +78,7 @@ func AccountTransferWorkflowScenarios(ctx workflow.Context, input app.TransferIn
 
 	// Withdraw
 	upsertStep(ctx, "Withdraw")
-	err = workflow.ExecuteActivity(ctx, activities.Withdraw, idempotencyKey, input.Amount, name).Get(ctx, nil)
+	err = workflow.ExecuteActivity(ctx, activities.Withdraw, activityInput).Get(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +92,7 @@ func AccountTransferWorkflowScenarios(ctx workflow.Context, input app.TransferIn
 	// Deposit
 	upsertStep(ctx, "Deposit")
 	depositResponse := app.DepositResponse{}
-	err = workflow.ExecuteActivity(ctx, activities.Deposit, idempotencyKey, input.Amount, name).Get(ctx, &depositResponse)
+	err = workflow.ExecuteActivity(ctx, activities.Deposit, activityInput).Get(ctx, &depositResponse)
 	if err != nil {
 		// if deposit fails in an unrecoverable way, rollback the withdrawal and fail the workflow
 		logger.Info("Deposit failed unrecoverable error, reverting withdraw")

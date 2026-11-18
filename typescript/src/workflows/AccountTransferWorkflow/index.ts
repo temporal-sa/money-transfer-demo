@@ -9,7 +9,7 @@ import {
   RetryPolicy,
 } from '@temporalio/workflow';
 import type * as activities from '../../activities/index';
-import type { DepositResponse, TransferInput, TransferOutput, TransferStatus } from "../../types";
+import type { ActivityInput, DepositResponse, TransferInput, TransferOutput, TransferStatus } from "../../types";
 
 const DEFAULT_RETRY_POLICY: RetryPolicy = {
   initialInterval: '1s',
@@ -45,17 +45,18 @@ export async function AccountTransferWorkflow(input: TransferInput): Promise<Tra
 
   log.info(`Account Transfer workflow started, type = ${workflowType}`);
   const idempotencyKey = uuid4();
+  const activityInput: ActivityInput = { idempotencyKey, amount: input.amount, type: workflowType };
 
   // Validate
   await validateAsync(input);
   ({progress, transferState } = await updateProgressAsync(25, 1));
 
   // Withdraw
-  await withdrawAsync(idempotencyKey, input.amount, workflowType);
+  await withdrawAsync(activityInput);
   ({progress, transferState } = await updateProgressAsync(50, 3));
 
   // Deposit
-  depositResponse = await depositAsync(idempotencyKey, input.amount, workflowType);
+  depositResponse = await depositAsync(activityInput);
   ({progress, transferState } = await updateProgressAsync(75, 1));
 
   // Send Notification

@@ -3,6 +3,7 @@ package activities
 import (
 	"context"
 	"errors"
+	"money-transfer-worker/app"
 
 	"go.temporal.io/sdk/activity"
 )
@@ -11,14 +12,14 @@ const (
 	API_DOWNTIME = "AccountTransferWorkflowAPIDowntime"
 )
 
-func Withdraw(ctx context.Context, idempotencyKey string, amount float32, name string) (string, error) {
+func Withdraw(ctx context.Context, input app.ActivityInput) (string, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("Withdraw activity started", "amount", amount)
+	logger.Info("Withdraw activity started", "amount", input.Amount)
 	attempt := activity.GetInfo(ctx).Attempt
 
 	// simulate external API call
-	error := simulateExternalOperationWithError(1000, name, attempt)
-	logger.Info("Withdraw call complete", "name", name, "error", error)
+	error := simulateExternalOperationWithError(1000, input.Name, attempt)
+	logger.Info("Withdraw call complete", "name", input.Name, "error", error)
 
 	if API_DOWNTIME == error {
 		// a transient error, which can be retried

@@ -16,7 +16,7 @@ import {
 } from '@temporalio/workflow';
 import type * as activities from '../../activities/index';
 import type { RetryPolicy } from '@temporalio/client';
-import type { DepositResponse, TransferInput, TransferOutput, TransferStatus } from "../../types";
+import type { ActivityInput, DepositResponse, TransferInput, TransferOutput, TransferStatus } from "../../types";
 
 const DEFAULT_RETRY_POLICY: RetryPolicy = {
   initialInterval: '1s',
@@ -89,6 +89,7 @@ export async function AccountTransferWorkflowScenarios(input: TransferInput): Pr
 
   log.info(`Dynamic Account Transfer workflow started, type = ${workflowType}`);
   const idempotencyKey = uuid4();
+  const activityInput: ActivityInput = { idempotencyKey, amount: input.amount, type: workflowType };
 
   // Validate
   await upsertStep('Validate');
@@ -110,7 +111,7 @@ export async function AccountTransferWorkflowScenarios(input: TransferInput): Pr
 
   // Withdraw
   await upsertStep('Withdraw');
-  await withdrawAsync(idempotencyKey, input.amount, workflowType);
+  await withdrawAsync(activityInput);
   ({progress, transferState } = await updateProgressAsync(50, 3));
 
   if(WF_TYPES.BUG == workflowType) {
@@ -122,7 +123,7 @@ export async function AccountTransferWorkflowScenarios(input: TransferInput): Pr
   await upsertStep('Deposit');
 
   try {
-    depositResponse = await depositAsync(idempotencyKey, input.amount, workflowType);
+    depositResponse = await depositAsync(activityInput);
     ({progress, transferState } = await updateProgressAsync(75, 1));
   } catch(err) {
     // if deposit fails in an unrecoverable way, rollback the withdrawal and fail the workflow

@@ -8,7 +8,7 @@ from temporalio import workflow
 from temporalio.common import RawValue, SearchAttributeKey
 from temporalio.exceptions import ApplicationError
 
-from shared_objects import TransferInput, TransferOutput, TransferStatus, DepositResponse
+from shared_objects import ActivityInput, TransferInput, TransferOutput, TransferStatus, DepositResponse
 from activities import AccountTransferActivities
 
 @workflow.defn(dynamic=True)
@@ -37,6 +37,7 @@ class AccountTransferWorkflowScenarios:
         logger = workflow.logger
         logger.info(f"Dynamic Account Transfer Workflow started {self.workflow_type}, input = {input}")
         idempotencyKey = str(workflow.uuid4())
+        activityInput = ActivityInput(idempotencyKey, input.amount, self.workflow_type)
 
         # Validate
         self.upsertStep("Validate")
@@ -60,7 +61,7 @@ class AccountTransferWorkflowScenarios:
         # Withdraw
         self.upsertStep("Withdraw")
         await workflow.execute_activity(AccountTransferActivities.withdraw,
-            args=[idempotencyKey, input.amount, self.workflow_type],
+            args=[activityInput],
             start_to_close_timeout=self.start_to_close_timeout,
             retry_policy=self.retry_policy)
         await self.updateProgress(50, 3)
@@ -73,7 +74,7 @@ class AccountTransferWorkflowScenarios:
         self.upsertStep("Deposit")
         try:
             self.depositResponse = await workflow.execute_activity(AccountTransferActivities.deposit,
-                args=[idempotencyKey, input.amount, self.workflow_type],
+                args=[activityInput],
                 start_to_close_timeout=self.start_to_close_timeout,
                 retry_policy=self.retry_policy)
             await self.updateProgress(75, 1)

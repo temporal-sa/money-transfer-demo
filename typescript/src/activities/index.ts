@@ -1,5 +1,5 @@
 import { ApplicationFailure, Context, log, sleep } from '@temporalio/activity';
-import type { DepositResponse, TransferInput } from '../types';
+import type { ActivityInput, DepositResponse, TransferInput } from '../types';
 
 export const API_DOWNTIME = 'AccountTransferWorkflowAPIDowntime';
 export const INVALID_ACCOUNT = 'AccountTransferWorkflowInvalidAccount';
@@ -24,15 +24,15 @@ export async function validateAsync(input: TransferInput): Promise<string> {
   return SUCCESS;
 }
 
-export async function withdrawAsync(idempotencyKey: string, amount: number, type: string): Promise<string> {
-  log.info(`Withdraw activity started, amount = ${amount}`);
+export async function withdrawAsync(input: ActivityInput): Promise<string> {
+  log.info(`Withdraw activity started, amount = ${input.amount}`);
 
   const context = Context.current();
   const { attempt } = context.info;
 
   // Simulate External API Call
-  const error = await simulateExternalOperationAsyncComplex(1000, type, attempt);
-  log.info(`Withdraw call complete, type = ${type}, error = ${error}`);
+  const error = await simulateExternalOperationAsyncComplex(1000, input.type, attempt);
+  log.info(`Withdraw call complete, type = ${input.type}, error = ${error}`);
   
   if(error == API_DOWNTIME) {
     log.error(`Withdraw API unavailable, attempt = ${attempt}`);
@@ -45,14 +45,14 @@ export async function withdrawAsync(idempotencyKey: string, amount: number, type
   return SUCCESS;
 }
 
-export async function depositAsync(idempotencyKey: string, amount: number, type: string): Promise<DepositResponse> {
-  log.info(`Deposit activity started, amount = ${amount}`);
+export async function depositAsync(input: ActivityInput): Promise<DepositResponse> {
+  log.info(`Deposit activity started, amount = ${input.amount}`);
 
   const context = Context.current();
   const { attempt } = context.info;
 
-  const error = await simulateExternalOperationAsyncComplex(1000, type, attempt);
-  log.info(`Deposit call complete, type = ${type}, error = ${error}`);
+  const error = await simulateExternalOperationAsyncComplex(1000, input.type, attempt);
+  log.info(`Deposit call complete, type = ${input.type}, error = ${error}`);
 
   if(error == INVALID_ACCOUNT) {
     throw ApplicationFailure.create({

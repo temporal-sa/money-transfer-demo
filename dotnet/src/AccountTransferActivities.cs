@@ -36,15 +36,15 @@ public class AccountTransferActivities
 
 
     [Activity]
-    public async Task<string> WithdrawAsync(string idempotencyKey, float amount, string type)
+    public async Task<string> WithdrawAsync(ActivityInput input)
     {
         var logger = ActivityExecutionContext.Current.Logger;
-        logger.LogInformation("Withdraw activity started, amount = {}", amount);
+        logger.LogInformation("Withdraw activity started, amount = {}", input.Amount);
         int attempt = ActivityExecutionContext.Current.Info.Attempt;
 
         // simulate external API call
-        string error = await SimulateExternalOperationAsync(1000, type, attempt);
-        logger.LogInformation("Withdraw call complete, type = {}, error = {}", type, error);
+        string error = await SimulateExternalOperationAsync(1000, input.Type, attempt);
+        logger.LogInformation("Withdraw call complete, type = {}, error = {}", input.Type, error);
 
         if (API_DOWNTIME == error)
         {
@@ -57,15 +57,15 @@ public class AccountTransferActivities
     }
 
     [Activity]
-    public async Task<DepositResponse> DepositAsync(String idempotencyKey, float amount, string type)
+    public async Task<DepositResponse> DepositAsync(ActivityInput input)
     {
         var logger = ActivityExecutionContext.Current.Logger;
-        logger.LogInformation("Deposit activity started, amount = {}", amount);
+        logger.LogInformation("Deposit activity started, amount = {}", input.Amount);
         int attempt = ActivityExecutionContext.Current.Info.Attempt;
 
         // simulate external API call
-        string error = await SimulateExternalOperationAsync(1000, type, attempt);
-        logger.LogInformation("Deposit call complete, type = {}, error = {}", type, error);
+        string error = await SimulateExternalOperationAsync(1000, input.Type, attempt);
+        logger.LogInformation("Deposit call complete, type = {}, error = {}", input.Type, error);
 
         if (INVALID_ACCOUNT == error)
         {

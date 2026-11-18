@@ -17,6 +17,7 @@ public class AccountTransferWorkflow
         var type = Workflow.Info.WorkflowType;
         logger.LogInformation("Account Transfer workflow started, type = {}", type);
         var idempotencyKey = Workflow.Random.Next().ToString();
+        var activityInput = new ActivityInput(idempotencyKey, input.Amount, type);
 
         // Validate
         await Workflow.ExecuteActivityAsync((AccountTransferActivities act) =>
@@ -25,12 +26,12 @@ public class AccountTransferWorkflow
 
         // Withdraw
         await Workflow.ExecuteActivityAsync((AccountTransferActivities act) =>
-            act.WithdrawAsync(idempotencyKey, input.Amount, type), AccountTransferActivities.options);
+            act.WithdrawAsync(activityInput), AccountTransferActivities.options);
         await UpdateProgressAsync(50, 3);
 
         // Deposit
         depositResponse = await Workflow.ExecuteActivityAsync((AccountTransferActivities act) =>
-            act.DepositAsync(idempotencyKey, input.Amount, type), AccountTransferActivities.options);
+            act.DepositAsync(activityInput), AccountTransferActivities.options);
         await UpdateProgressAsync(75, 1);
 
         // Send Notification

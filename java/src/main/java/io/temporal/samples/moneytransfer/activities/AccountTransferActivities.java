@@ -4,6 +4,7 @@ import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.samples.moneytransfer.model.ActivityInput;
 import io.temporal.samples.moneytransfer.model.DepositResponse;
 import io.temporal.samples.moneytransfer.model.TransferInput;
 
@@ -26,10 +27,10 @@ public interface AccountTransferActivities {
     String validate(TransferInput input);
 
     @ActivityMethod
-    String withdraw(String idempotencyKey, float amount, String type);
+    String withdraw(ActivityInput input);
 
     @ActivityMethod
-    DepositResponse deposit(String idempotencyKey, float amount, String type);
+    DepositResponse deposit(ActivityInput input);
 
     @ActivityMethod
     String sendNotification(TransferInput input);

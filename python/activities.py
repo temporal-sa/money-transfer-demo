@@ -3,7 +3,7 @@ import logging
 from datetime import timedelta
 from temporalio import activity
 from temporalio.common import RetryPolicy
-from shared_objects import TransferInput, DepositResponse
+from shared_objects import ActivityInput, TransferInput, DepositResponse
 from temporalio.exceptions import ApplicationError
 
 logging.basicConfig(level=logging.INFO)
@@ -36,13 +36,13 @@ class AccountTransferActivities:
         return "SUCCESS"
 
     @activity.defn
-    async def withdraw(self, idempotencyKey: str, amount: float, workflow_type: str) -> str:
-        activity.logger.info(f"Withdraw activity started. amount {amount}")
+    async def withdraw(self, input: ActivityInput) -> str:
+        activity.logger.info(f"Withdraw activity started. amount {input.amount}")
         attempt = activity.info().attempt
 
         # simulate external API call
-        error = await self.simulate_external_operation(1000, workflow_type, attempt)
-        activity.logger.info(f"Withdraw call complete, type {workflow_type}, error {error}")
+        error = await self.simulate_external_operation(1000, input.workflowType, attempt)
+        activity.logger.info(f"Withdraw call complete, type {input.workflowType}, error {error}")
 
         if self.API_DOWNTIME == error:
             # transient error, which can be retried
@@ -52,13 +52,13 @@ class AccountTransferActivities:
         return "SUCCESS"
 
     @activity.defn
-    async def deposit(self, idempotencyKey: str, amount: float, workflow_type: str) -> DepositResponse:
-        activity.logger.info(f"Deposit activity started. amount {amount}")
+    async def deposit(self, input: ActivityInput) -> DepositResponse:
+        activity.logger.info(f"Deposit activity started. amount {input.amount}")
         attempt = activity.info().attempt
 
         # simulate external API call
-        error = await self.simulate_external_operation(1000, workflow_type, attempt)
-        activity.logger.info(f"Deposit activity complete. type {workflow_type} error {error}")
+        error = await self.simulate_external_operation(1000, input.workflowType, attempt)
+        activity.logger.info(f"Deposit activity complete. type {input.workflowType} error {error}")
 
         if self.INVALID_ACCOUNT == error:
             # business error, which cannot be retried

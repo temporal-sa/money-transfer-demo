@@ -5,6 +5,7 @@ import io.temporal.common.converter.EncodedValues;
 import io.temporal.failure.ActivityFailure;
 import io.temporal.failure.ApplicationFailure;
 import io.temporal.samples.moneytransfer.activities.AccountTransferActivities;
+import io.temporal.samples.moneytransfer.model.ActivityInput;
 import io.temporal.samples.moneytransfer.model.DepositResponse;
 import io.temporal.samples.moneytransfer.model.TransferInput;
 import io.temporal.samples.moneytransfer.model.TransferOutput;
@@ -43,6 +44,7 @@ public class AccountTransferWorkflowScenarios implements DynamicWorkflow {
         String type = Workflow.getInfo().getWorkflowType();
         log.info("Dynamic Account Transfer workflow started, type = {}", type);
         String idempotencyKey = Workflow.randomUUID().toString();
+        ActivityInput activityInput = new ActivityInput(idempotencyKey, input.getAmount(), type);
 
         // Validate
         upsertStep("Validate");
@@ -74,7 +76,7 @@ public class AccountTransferWorkflowScenarios implements DynamicWorkflow {
 
         // Withdraw
         upsertStep("Withdraw");
-        activities.withdraw(idempotencyKey, input.getAmount(), type);
+        activities.withdraw(activityInput);
         updateProgress(50, 3);
 
         if (BUG.equals(type)) {
@@ -85,7 +87,7 @@ public class AccountTransferWorkflowScenarios implements DynamicWorkflow {
         // Deposit
         upsertStep("Deposit");
         try {
-            depositResponse = activities.deposit(idempotencyKey, input.getAmount(), type);
+            depositResponse = activities.deposit(activityInput);
             updateProgress(75, 1);
         } catch (ActivityFailure e) {
             // if deposit fails in an unrecoverable way, rollback the withdrawal and fail the workflow

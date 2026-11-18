@@ -13,14 +13,14 @@ const (
 	INVALID_ACCOUNT = "AccountTransferWorkflowInvalidAccount"
 )
 
-func Deposit(ctx context.Context, idempotencyKey string, amount float32, name string) (app.DepositResponse, error) {
+func Deposit(ctx context.Context, input app.ActivityInput) (app.DepositResponse, error) {
 	logger := activity.GetLogger(ctx)
-	logger.Info("Deposit activity started", "amount", amount)
+	logger.Info("Deposit activity started", "amount", input.Amount)
 	attempt := activity.GetInfo(ctx).Attempt
 
 	// simulate external API call
-	error := simulateExternalOperationWithError(1000, name, attempt)
-	logger.Info("Deposit call complete", "name", name, "error", error)
+	error := simulateExternalOperationWithError(1000, input.Name, attempt)
+	logger.Info("Deposit call complete", "name", input.Name, "error", error)
 
 	if INVALID_ACCOUNT == error {
 		// a business error, which cannot be retried
