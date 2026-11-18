@@ -34,6 +34,7 @@ module Workflows
       logger.info("Dynamic Account Transfer Workflow started: #{workflow_type}, input: #{input}")
 
       idempotency_key = Temporalio::Workflow.random.uuid
+      activity_input = Models::ActivityInput.new(idempotency_key:, amount: input.amount)
 
       upsert_step('Validate')
       validate_transfer(input)
@@ -42,14 +43,14 @@ module Workflows
       handle_approval_if_needed(workflow_type)
 
       upsert_step('Withdraw')
-      withdraw_funds(idempotency_key, input.amount, workflow_type)
+      withdraw_funds(activity_input)
       update_progress(50, 3)
 
       handle_bug_simulation(workflow_type)
 
       upsert_step('Deposit')
       begin
-        @deposit_response = deposit_funds(idempotency_key, input.amount, workflow_type)
+        @deposit_response = deposit_funds(activity_input)
         update_progress(75, 1)
       rescue  => e
         puts e

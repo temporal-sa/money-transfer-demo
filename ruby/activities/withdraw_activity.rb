@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
 require_relative 'base_activity'
+require_relative '../models/activity_input'
 
 module Activities
   class WithdrawActivity < BaseActivity
     API_DOWNTIME = 'AccountTransferWorkflowAPIDowntime'
 
-    def execute(idempotency_key, amount)
+    def execute(input)
+      input = Models::ActivityInput.from_h(input)
       attempt = Temporalio::Activity::Context.current.info.attempt
       workflow_type = Temporalio::Activity::Context.current.info.workflow_type
-      logger.info("Withdraw activity started. Amount: #{amount}, workflow type: #{workflow_type}, attempt: #{attempt}")
+      logger.info("Withdraw activity started. Amount: #{input.amount}, workflow type: #{workflow_type}, attempt: #{attempt}")
 
       error = simulate_external_operation_with_error(1000, workflow_type, attempt)
       logger.info("Withdraw call complete, type: #{workflow_type}, error: #{error}")

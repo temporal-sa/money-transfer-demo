@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'temporalio/workflow'
+require_relative '../models/activity_input'
 require_relative '../models/transfer_input'
 require_relative '../models/transfer_output'
 require_relative '../models/transfer_status'
@@ -22,14 +23,15 @@ module Workflows
       logger.info("Simple workflow started: #{workflow_type}, input: #{input}")
 
       idempotency_key = Temporalio::Workflow.random.uuid
+      activity_input = Models::ActivityInput.new(idempotency_key:, amount: input.amount)
 
       validate_transfer(input)
       update_progress(25, 1)
 
-      withdraw_funds(idempotency_key, input.amount, workflow_type)
+      withdraw_funds(activity_input)
       update_progress(50, 3)
 
-      @deposit_response = deposit_funds(idempotency_key, input.amount, workflow_type)
+      @deposit_response = deposit_funds(activity_input)
       update_progress(75, 1)
 
       send_notification(input)
@@ -55,34 +57,35 @@ module Workflows
     def validate_transfer(input)
       Temporalio::Workflow.execute_activity(
         Activities::ValidateActivity,
-        input,
+        input.deep_camelize_keys,
         start_to_close_timeout: 5,
         retry_policy: Activities::BaseActivity::RETRY_POLICY
       )
     end
 
-    def withdraw_funds(idempotency_key, amount, workflow_type)
+    def withdraw_funds(activity_input)
       Temporalio::Workflow.execute_activity(
         Activities::WithdrawActivity,
-        idempotency_key, amount,
+        activity_input.deep_camelize_keys,
         start_to_close_timeout: 5,
         retry_policy: Activities::BaseActivity::RETRY_POLICY
       )
     end
 
-    def deposit_funds(idempotency_key, amount, workflow_type)
-      Temporalio::Workflow.execute_activity(
+    def deposit_funds(activity_input)
+      result = Temporalio::Workflow.execute_activity(
         Activities::DepositActivity,
-        idempotency_key, amount,
+        activity_input.deep_camelize_keys,
         start_to_close_timeout: 5,
         retry_policy: Activities::BaseActivity::RETRY_POLICY
       )
+      Models::DepositResponse.from_h(result)
     end
 
     def send_notification(input)
       Temporalio::Workflow.execute_activity(
         Activities::SendNotificationActivity,
-        input,
+        input.deep_camelize_keys,
         start_to_close_timeout: 5,
         retry_policy: Activities::BaseActivity::RETRY_POLICY
       )

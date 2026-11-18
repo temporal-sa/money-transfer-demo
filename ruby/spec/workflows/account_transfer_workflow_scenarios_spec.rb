@@ -32,8 +32,8 @@ RSpec.describe Workflows::AccountTransferWorkflowScenarios do
     context 'with standard workflow' do
       it 'processes the transfer successfully' do
         allow(Temporalio::Workflow).to receive(:execute_activity)
-          .with(Activities::DepositActivity, anything, anything, any_args)
-          .and_return(deposit_response)
+          .with(Activities::DepositActivity, anything, any_args)
+          .and_return(deposit_response.deep_camelize_keys)
 
         result = workflow.execute(transfer_input)
 
@@ -55,8 +55,8 @@ RSpec.describe Workflows::AccountTransferWorkflowScenarios do
         allow(Temporalio::Workflow).to receive(:timeout).and_yield
         allow(Temporalio::Workflow).to receive(:wait_condition).and_yield
         allow(Temporalio::Workflow).to receive(:execute_activity)
-          .with(Activities::DepositActivity, anything, anything, any_args)
-          .and_return(deposit_response)
+          .with(Activities::DepositActivity, anything, any_args)
+          .and_return(deposit_response.deep_camelize_keys)
 
         workflow.execute(transfer_input)
 
@@ -100,8 +100,8 @@ RSpec.describe Workflows::AccountTransferWorkflowScenarios do
 
       it 'upserts search attributes for each step' do
         allow(Temporalio::Workflow).to receive(:execute_activity)
-          .with(Activities::DepositActivity, anything, anything, any_args)
-          .and_return(deposit_response)
+          .with(Activities::DepositActivity, anything, any_args)
+          .and_return(deposit_response.deep_camelize_keys)
 
         workflow.execute(transfer_input)
 
@@ -125,7 +125,7 @@ RSpec.describe Workflows::AccountTransferWorkflowScenarios do
     context 'when deposit fails' do
       it 'reverts withdraw and raises error' do
         allow(Temporalio::Workflow).to receive(:execute_activity)
-          .with(Activities::DepositActivity, anything, anything, any_args)
+          .with(Activities::DepositActivity, anything, any_args)
           .and_raise(StandardError.new('Deposit failed'))
 
         expect(workflow).to receive(:undo_withdraw).with(100)
