@@ -22,21 +22,12 @@ const transferOutput:TransferOutput = {
   depositResponse
 }
 
-describe('Testing Happy Path', () => {
+describe('Testing Happy Path', function () {
   let testEnv: TestWorkflowEnvironment;
+   this.timeout(60000);
 
   before(async () => {
-    //testEnv = await TestWorkflowEnvironment.createTimeSkipping();
-
-    
-    testEnv = await TestWorkflowEnvironment.createTimeSkipping({
-      server: {
-        executable: {
-          type: 'existing-path',
-          path: './test/temporal-test-server_1.25.1_macOS_amd64',
-        },
-      },
-    });
+    testEnv = await TestWorkflowEnvironment.createTimeSkipping();
     
   });
 
@@ -61,6 +52,6 @@ describe('Testing Happy Path', () => {
         taskQueue,
       })
     );
-    assert.equal(result, transferOutput);
+    assert.deepStrictEqual(result, transferOutput);
   });
 });
