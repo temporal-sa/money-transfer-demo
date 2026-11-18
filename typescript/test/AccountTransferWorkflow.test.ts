@@ -26,8 +26,6 @@ describe('Testing Happy Path', function () {
   let testEnv: TestWorkflowEnvironment;
 
   before(async function () {
-    // Starting the time-skipping test server can take well over mocha's default 2s hook timeout
-    // (the first run also downloads the test server binary for this platform).
     this.timeout(30_000);
     testEnv = await TestWorkflowEnvironment.createTimeSkipping();
   });
@@ -37,7 +35,6 @@ describe('Testing Happy Path', function () {
   });
 
   it('successfully completes the Workflow with a mocked Activity', async function () {
-    // Bundling the workflow code and running it against the test server takes longer than 2s
     this.timeout(15_000);
     const { client, nativeConnection } = testEnv;
 
