@@ -24,7 +24,7 @@ See the [Rust README](rust/README.md#prerequisites).
 
 ## Running the Demo locally
 
-> **Note:** The `withdraw` and `deposit` activities take a single input object (`ActivityInput`) rather than separate arguments. Transfers started on an older version of a worker can't be resumed by a newer one, so after upgrading, restart your workers and start new transfers.
+> **Note:** In the Java, Go, .NET, Python, TypeScript and Rust workers, the `withdraw` and `deposit` activities take a single input object (`ActivityInput`) rather than separate arguments. Transfers started on an older version of a worker can't be resumed by a newer one, so after upgrading, restart your workers and start new transfers.
 
 Start Temporal Locally
 

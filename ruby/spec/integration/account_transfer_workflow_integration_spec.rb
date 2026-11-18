@@ -63,7 +63,7 @@ RSpec.describe 'AccountTransferWorkflow Integration', :integration do
 
       # Create a mock activity that will take longer to complete
       slow_activity = Class.new(Activities::DepositActivity) do
-        def execute(input)
+        def deposit(idempotency_key, amount)
           sleep 5
           super
         end

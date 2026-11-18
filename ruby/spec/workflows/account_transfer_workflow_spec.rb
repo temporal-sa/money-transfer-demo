@@ -59,7 +59,7 @@ RSpec.describe Workflows::AccountTransferWorkflow do
 
     it 'processes the transfer through all steps' do
       allow(Temporalio::Workflow).to receive(:execute_activity)
-        .with(Activities::DepositActivity, anything, any_args)
+        .with(Activities::DepositActivity, anything, anything, any_args)
         .and_return(deposit_response)
 
       result = workflow.execute(hash_input)
@@ -68,9 +68,9 @@ RSpec.describe Workflows::AccountTransferWorkflow do
       expect(Temporalio::Workflow).to have_received(:execute_activity)
         .with(Activities::ValidateActivity, transfer_input, any_args)
       expect(Temporalio::Workflow).to have_received(:execute_activity)
-        .with(Activities::WithdrawActivity, { 'idempotencyKey' => 'test-uuid', 'amount' => 100 }, any_args)
+        .with(Activities::WithdrawActivity, 'test-uuid', 100, any_args)
       expect(Temporalio::Workflow).to have_received(:execute_activity)
-        .with(Activities::DepositActivity, { 'idempotencyKey' => 'test-uuid', 'amount' => 100 }, any_args)
+        .with(Activities::DepositActivity, 'test-uuid', 100, any_args)
       expect(Temporalio::Workflow).to have_received(:execute_activity)
         .with(Activities::SendNotificationActivity, transfer_input, any_args)
 
@@ -86,7 +86,7 @@ RSpec.describe Workflows::AccountTransferWorkflow do
 
     it 'updates progress correctly during execution' do
       allow(Temporalio::Workflow).to receive(:execute_activity)
-        .with(Activities::DepositActivity, anything, any_args)
+        .with(Activities::DepositActivity, anything, anything, any_args)
         .and_return(deposit_response)
 
       expect(workflow).to receive(:update_progress).with(25, 1).ordered
