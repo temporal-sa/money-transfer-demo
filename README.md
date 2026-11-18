@@ -18,6 +18,10 @@ The language runtime versions can be easily installed using [asdf](https://asdf-
 asdf install
 ```
 
+The Rust worker also needs the Protocol Buffers compiler (`protoc`) on your `PATH` to build
+(`brew install protobuf` on macOS, `sudo apt-get install -y protobuf-compiler` on Debian/Ubuntu).
+See the [Rust README](rust/README.md#prerequisites).
+
 ## Running the Demo locally
 
 > **Note:** The `withdraw` and `deposit` activities take a single input object (`ActivityInput`) rather than separate arguments. Transfers started on an older version of a worker can't be resumed by a newer one, so after upgrading, restart your workers and start new transfers.
