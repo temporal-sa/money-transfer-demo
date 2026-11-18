@@ -24,18 +24,18 @@ const transferOutput:TransferOutput = {
 
 describe('Testing Happy Path', function () {
   let testEnv: TestWorkflowEnvironment;
-   this.timeout(60000);
 
-  before(async () => {
+  before(async function () {
+    this.timeout(30_000);
     testEnv = await TestWorkflowEnvironment.createTimeSkipping();
-    
   });
 
   after(async () => {
     await testEnv?.teardown();
   });
 
-  it('successfully completes the Workflow with a mocked Activity', async () => {
+  it('successfully completes the Workflow with a mocked Activity', async function () {
+    this.timeout(15_000);
     const { client, nativeConnection } = testEnv;
 
     const worker = await Worker.create({

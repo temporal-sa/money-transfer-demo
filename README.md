@@ -18,6 +18,10 @@ The language runtime versions can be easily installed using [asdf](https://asdf-
 asdf install
 ```
 
+The Rust worker also needs the Protocol Buffers compiler (`protoc`) on your `PATH` to build
+(`brew install protobuf` on macOS, `sudo apt-get install -y protobuf-compiler` on Debian/Ubuntu).
+See the [Rust README](rust/README.md#prerequisites).
+
 ## Running the Demo locally
 Start Temporal Locally
 
