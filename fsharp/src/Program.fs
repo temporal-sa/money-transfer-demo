@@ -10,7 +10,6 @@ open Temporalio.Client
 open Temporalio.Converters
 open Temporalio.Worker
 open MoneyTransfer.Model
-open MoneyTransfer.Workflows
 open MoneyTransfer.EncryptionCodec
 
 let private env name =

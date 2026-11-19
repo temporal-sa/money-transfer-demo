@@ -48,7 +48,8 @@ To read them in the Temporal Web UI, use the codec server at
 |------|---------------|
 | [`src/Model.fs`](src/Model.fs) | Payloads as immutable records, and the demo scenarios as a discriminated union (`Scenario`) parsed from the workflow type |
 | [`src/Activities.fs`](src/Activities.fs) | Activities as plain module functions. No class is needed. Scenario faults come from a single `match` |
-| [`src/Workflows.fs`](src/Workflows.fs) | The happy-path workflow, and a dynamic workflow that handles every other scenario: approval (signal + update), the bug, and a saga-style compensation |
+| [`src/AccountTransferWorkflow.fs`](src/AccountTransferWorkflow.fs) | The happy-path workflow: four steps, written as if nothing can go wrong |
+| [`src/AccountTransferWorkflowScenarios.fs`](src/AccountTransferWorkflowScenarios.fs) | A dynamic workflow that handles every other scenario: approval (signal + update), the bug, and a saga-style compensation |
 | [`src/EncryptionCodec.fs`](src/EncryptionCodec.fs) | Optional payload encryption, byte-compatible with the other workers |
 | [`src/Program.fs`](src/Program.fs) | Connection settings parsed into an `Auth` union (`Local` / `ApiKey` / `MTls`), then running the worker |
 | [`PITFALLS.md`](PITFALLS.md) | F#-specific pitfalls with the .NET SDK: async in workflows, SDK interop, workflow classes, exceptions |
@@ -99,5 +100,5 @@ Select a scenario in the UI's "Debug: Simulate" box:
 | Advanced Visibility | Upserts the `Step` search attribute at each step |
 | Human-in-the-Loop | Waits 30s for the `approveTransfer` signal or `approveTransferUpdate` update, or fails |
 | API Downtime | Withdraw fails on attempts 1–4 and Temporal retries it until attempt 5 succeeds |
-| Bug in Workflow | `failwith` after Withdraw fails the workflow *task*. Delete the line in `Workflows.fs` and restart the worker, and the same workflow completes |
+| Bug in Workflow | `failwith` after Withdraw fails the workflow *task*. Delete the line in `AccountTransferWorkflowScenarios.fs` and restart the worker, and the same workflow completes |
 | Invalid Account | Deposit fails with a non-retryable error, then UndoWithdraw runs and the workflow fails |
