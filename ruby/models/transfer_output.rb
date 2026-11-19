@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'json/add/struct'
 require_relative 'serialization'
 
 module Models

@@ -59,20 +59,20 @@ RSpec.describe Workflows::AccountTransferWorkflow do
 
     it 'processes the transfer through all steps' do
       allow(Temporalio::Workflow).to receive(:execute_activity)
-        .with(Activities::DepositActivity, anything, anything, any_args)
-        .and_return(deposit_response)
+        .with(Activities::DepositActivity, anything, any_args)
+        .and_return(deposit_response.deep_camelize_keys)
 
       result = workflow.execute(hash_input)
 
       # Verify all activities were called
       expect(Temporalio::Workflow).to have_received(:execute_activity)
-        .with(Activities::ValidateActivity, transfer_input, any_args)
+        .with(Activities::ValidateActivity, transfer_input.deep_camelize_keys, any_args)
       expect(Temporalio::Workflow).to have_received(:execute_activity)
-        .with(Activities::WithdrawActivity, 'test-uuid', 100, any_args)
+        .with(Activities::WithdrawActivity, { 'idempotencyKey' => 'test-uuid', 'amount' => 100 }, any_args)
       expect(Temporalio::Workflow).to have_received(:execute_activity)
-        .with(Activities::DepositActivity, 'test-uuid', 100, any_args)
+        .with(Activities::DepositActivity, { 'idempotencyKey' => 'test-uuid', 'amount' => 100 }, any_args)
       expect(Temporalio::Workflow).to have_received(:execute_activity)
-        .with(Activities::SendNotificationActivity, transfer_input, any_args)
+        .with(Activities::SendNotificationActivity, transfer_input.deep_camelize_keys, any_args)
 
       # Verify workflow state
       expect(workflow).to have_attributes(
@@ -86,8 +86,8 @@ RSpec.describe Workflows::AccountTransferWorkflow do
 
     it 'updates progress correctly during execution' do
       allow(Temporalio::Workflow).to receive(:execute_activity)
-        .with(Activities::DepositActivity, anything, anything, any_args)
-        .and_return(deposit_response)
+        .with(Activities::DepositActivity, anything, any_args)
+        .and_return(deposit_response.deep_camelize_keys)
 
       expect(workflow).to receive(:update_progress).with(25, 1).ordered
       expect(workflow).to receive(:update_progress).with(50, 3).ordered

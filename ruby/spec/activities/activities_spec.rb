@@ -21,6 +21,10 @@ RSpec.describe 'Activities' do
     )
   end
 
+  let(:activity_input) do
+    { 'idempotencyKey' => 'key123', 'amount' => 123 }
+  end
+
   let(:info) do
     Temporalio::Testing::ActivityEnvironment.default_info
   end
@@ -31,14 +35,14 @@ RSpec.describe 'Activities' do
 
   describe Activities::ValidateActivity do
     it 'successfully validates transfer input' do
-      result = env.run(subject, transfer_input)
+      result = env.run(subject, transfer_input.deep_camelize_keys)
       expect(result).to eq('SUCCESS')
     end
   end
 
   describe Activities::WithdrawActivity do
     it 'successfully withdraws funds' do
-      result = env.run(subject, 'key123', 123)
+      result = env.run(subject, activity_input)
       expect(subject).to have_received(:sleep).with(1.0)
       expect(result).to eq('SUCCESS')
     end
@@ -52,7 +56,7 @@ RSpec.describe 'Activities' do
 
       it 'raises error for API downtime scenario' do
         expect do
-          env.run(subject, 'key123', 123)
+          env.run(subject, activity_input)
         end.to raise_error(StandardError, 'Withdraw activity failed, API unavailable')
       end
     end
@@ -67,7 +71,7 @@ RSpec.describe 'Activities' do
 
       it 'does not raise error for API downtime scenario' do
         expect do
-          env.run(subject, 'key123', 123)
+          env.run(subject, activity_input)
         end.not_to raise_error
       end
     end
@@ -75,9 +79,9 @@ RSpec.describe 'Activities' do
 
   describe Activities::DepositActivity do
     it 'successfully deposits funds' do
-      result = env.run(subject, 'key123', 123)
+      result = env.run(subject, activity_input)
       expect(subject).to have_received(:sleep).with(1.0)
-      expect(result).to have_attributes(charge_id: 'example-transfer-id')
+      expect(result).to eq('chargeId' => 'example-transfer-id')
     end
 
     context 'when scheduled by AccountTransferWorkflowInvalidAccount workflow' do
@@ -89,7 +93,7 @@ RSpec.describe 'Activities' do
 
       it 'raises error for invalid account scenario' do
         expect do
-          env.run(subject, 'key123', 123)
+          env.run(subject, activity_input)
         end.to raise_error(Temporalio::Error::ApplicationError, 'Deposit activity failed, account is invalid')
       end
     end
@@ -103,7 +107,7 @@ RSpec.describe 'Activities' do
 
       it 'does not raise error for invalid account scenario' do
         expect do
-          env.run(subject, 'key123', 123)
+          env.run(subject, activity_input)
         end.not_to raise_error
       end
     end
@@ -111,7 +115,7 @@ RSpec.describe 'Activities' do
 
   describe Activities::SendNotificationActivity do
     it 'successfully sends notification' do
-      result = env.run(subject, transfer_input)
+      result = env.run(subject, transfer_input.deep_camelize_keys)
       expect(result).to eq('SUCCESS')
     end
   end
