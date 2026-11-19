@@ -46,7 +46,8 @@ const allWorkers = [
   { name: 'java', dir: '../java' },
   { name: 'python', dir: '../python' },
   { name: 'typeScript', dir: '../typescript' },
-  { name: 'rust', dir: '../rust' }
+  { name: 'rust', dir: '../rust' },
+  { name: 'fsharp', dir: '../fsharp' }
 ];
 
 const onlyWorker = process.env.ONLY_WORKER;

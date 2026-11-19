@@ -46,7 +46,7 @@ Navigate to http://localhost:7070 in a web browser to interact with the UX
 
 ### Start a worker
 
-Now start a worker. You can choose to use the Java, Go or .NET Worker below
+Now start a worker. You can choose to use the Java, Go, .NET, F# Worker or any of the others below
 
 #### Java Worker
 In a new terminal, start the Java Worker 
@@ -68,6 +68,14 @@ In a new terminal, start the .NET Worker
 
 ```bash
 cd dotnet
+./startlocalworker.sh
+```
+
+#### F# Worker
+In a new terminal, start the F# Worker (uses the same .NET SDK as the .NET Worker)
+
+```bash
+cd fsharp
 ./startlocalworker.sh
 ```
 
@@ -128,7 +136,7 @@ cd ui
 
 ### Start a Worker
 
-Now start a worker. You can choose to use the Java, Go or .NET Worker below
+Now start a worker. You can choose to use the Java, Go, .NET, F# Worker or any of the others below
 
 #### Java Worker
 In a new terminal, start the Java Worker
@@ -150,6 +158,14 @@ In a new terminal, start the .NET Worker
 
 ```bash
 cd dotnet
+./startcloudworker.sh
+```
+
+#### F# Worker
+In a new terminal, start the F# Worker
+
+```bash
+cd fsharp
 ./startcloudworker.sh
 ```
 
