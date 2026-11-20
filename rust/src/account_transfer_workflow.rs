@@ -50,12 +50,11 @@ impl AccountTransferWorkflow {
         info!("Workflow info: {:?}", info);
 
         let idempotency_key = ctx.uuid4();
-        //save the idempotency key and then hydrate a new variable for use by later activities
+        //save the idempotency key in workflow state
         ctx.state_mut(|s| {
             s.idempotency_key = idempotency_key.clone();
             info!("Idempotency key set to {}", s.idempotency_key)
         });
-        //let idempotency_key = ctx.state(|s| s.idempotency_key.clone());
 
         let amount = input.amount.into();
 

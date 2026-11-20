@@ -101,7 +101,7 @@ public class TransferScheduler {
                                 )
                                 .build()
                 );
-                // Make the schedule paused to demonstrate how to unpause a schedule
+                // Limit the schedule to the requested number of runs
                 builder.setState(
                         ScheduleState.newBuilder()
                                 .setLimitedAction(true)
@@ -116,8 +116,6 @@ public class TransferScheduler {
 
                 return new ScheduleUpdate(builder.build());
             });
-            // Unpause schedule
-            //      handle.unpause();
         } catch (Exception e) {
             System.out.println("Exception: " + e);
         }

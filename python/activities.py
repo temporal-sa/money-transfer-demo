@@ -18,7 +18,6 @@ class AccountTransferActivities:
     async def simulate_external_operation_ms(self, ms: int):
         try:
             await asyncio.sleep(ms / 1000)
-            # await time.sleep(ms / 1000)
         except InterruptedError as e:
             print(e.__traceback__)
 
