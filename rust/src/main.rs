@@ -40,7 +40,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let (conn_opts, namespace, is_cloud) = build_connection_options()?;
     let task_queue =
-        std::env::var("TEMPORAL_TASK_QUEUE").unwrap_or_else(|_| TASK_QUEUE.to_string());
+        std::env::var("TEMPORAL_MONEYTRANSFER_TASKQUEUE").unwrap_or_else(|_| TASK_QUEUE.to_string());
 
     let connection = Connection::connect(conn_opts).await?;
     if is_cloud {

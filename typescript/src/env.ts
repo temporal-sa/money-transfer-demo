@@ -102,5 +102,5 @@ export const taskQueue = getenv('TEMPORAL_MONEYTRANSFER_TASKQUEUE', 'MoneyTransf
 export const env = getenv('NODE_ENV', 'development');
 
 // Encryption
-export const encryptPayloads = getenv('ENCRYPT_PAYLOADS', 'false');
+export const encryptPayloads = getenv('ENCRYPT_PAYLOADS', 'false').toLowerCase();
 export const encryptKey = getenv('ENCRYPT_KEY', 'sa-rocks!sa-rocks!sa-rocks!yeah!');

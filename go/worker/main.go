@@ -9,6 +9,7 @@ import (
 	"money-transfer-worker/encryption"
 	"money-transfer-worker/workflows"
 	"os"
+	"strings"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/converter"
@@ -114,7 +115,7 @@ func getClientOptions() client.Options {
 	}
 
 	encryptPayloads := getEnv("ENCRYPT_PAYLOADS", "false")
-	if encryptPayloads == "true" {
+	if strings.EqualFold(encryptPayloads, "true") {
 		clientOptions.DataConverter = encryption.NewEncryptionDataConverter(
 			converter.GetDefaultDataConverter(),
 			encryption.DataConverterOptions{KeyID: "test", Compress: false},
