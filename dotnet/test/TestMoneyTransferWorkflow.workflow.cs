@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Temporalio.Client;
 using Temporalio.Testing;
 using Temporalio.Worker;
@@ -45,7 +44,6 @@ public class MoneyTransferTests
     public async Task RunAsync_MoneyTransfer_HumanInLoop_Approved()
     {
          await using var env = await WorkflowEnvironment.StartLocalAsync();
-         // await using var env = await WorkflowEnvironment.StartTimeSkippingAsync();
          var clientOptions = (TemporalClientOptions)env.Client.Options.Clone();
          var client = new TemporalClient(env.Client.Connection, clientOptions);
          var taskQueue = Guid.NewGuid().ToString();
@@ -53,11 +51,6 @@ public class MoneyTransferTests
             AddAllActivities(new AccountTransferActivities()).
             AddWorkflow<AccountTransferWorkflow>().
             AddWorkflow<AccountTransferWorkflowScenarios>();
-
-        // workerOptions.LoggerFactory = LoggerFactory.Create(builder =>
-        //     builder.
-        //         AddSimpleConsole(options => options.TimestampFormat = "[HH:mm:ss] ").
-        //         SetMinimumLevel(LogLevel.Information));
 
         using var worker = new TemporalWorker(client, workerOptions);
         await worker.ExecuteAsync(async () =>
@@ -88,7 +81,6 @@ public class MoneyTransferTests
     [Fact]
     public async Task RunAsync_MoneyTransfer_HumanInLoop_NotApproved()
     {
-         // await using var env = await WorkflowEnvironment.StartLocalAsync();
          await using var env = await WorkflowEnvironment.StartTimeSkippingAsync();
          var clientOptions = (TemporalClientOptions)env.Client.Options.Clone();
          var client = new TemporalClient(env.Client.Connection, clientOptions);
