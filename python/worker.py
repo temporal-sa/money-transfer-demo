@@ -56,7 +56,7 @@ async def main():
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s | %(levelname)s | %(filename)s:%(lineno)s | %(message)s")
 
-    taskQueue = os.getenv("TEMPORAL_TASK_QUEUE", "MoneyTransfer")
+    taskQueue = os.getenv("TEMPORAL_MONEYTRANSFER_TASKQUEUE", "MoneyTransfer")
     address = os.getenv("TEMPORAL_ADDRESS", "127.0.0.1:7233")
 
     client = await build_client()

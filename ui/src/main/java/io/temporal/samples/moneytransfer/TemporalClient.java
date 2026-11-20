@@ -112,7 +112,7 @@ public class TemporalClient {
         WorkflowClientOptions.Builder builder = WorkflowClientOptions.newBuilder();
 
         // if environment variable ENCRYPT_PAYLOADS is set to true, then use CryptCodec
-        if (System.getenv("ENCRYPT_PAYLOADS") != null && System.getenv("ENCRYPT_PAYLOADS").equals("true")) {
+        if ("true".equalsIgnoreCase(System.getenv("ENCRYPT_PAYLOADS"))) {
             builder.setDataConverter(
                     new CodecDataConverter(
                             DefaultDataConverter.newDefaultInstance(),
@@ -134,7 +134,7 @@ public class TemporalClient {
         ScheduleClientOptions.Builder builder = ScheduleClientOptions.newBuilder();
 
         // if environment variable ENCRYPT_PAYLOADS is set to true, then use CryptCodec
-        if (System.getenv("ENCRYPT_PAYLOADS") != null && System.getenv("ENCRYPT_PAYLOADS").equals("true")) {
+        if ("true".equalsIgnoreCase(System.getenv("ENCRYPT_PAYLOADS"))) {
             builder.setDataConverter(
                     new CodecDataConverter(
                             DefaultDataConverter.newDefaultInstance(),
